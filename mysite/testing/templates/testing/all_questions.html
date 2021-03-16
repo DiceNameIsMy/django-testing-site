@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head lang="en">
+    <meta charset="UTF-8" title="All Questions">
+</head>
+<body>
+    <div>
+        <h1>All questions list</h1>
+
+        <table>
+
+            {% for question in questions_list %}
+
+                <tr>{{ question.question_text }}</tr>
+                <tr>
+                    <li> {{ question.choice1 }} </li>
+                    <li> {{ question.choice2 }} </li>
+                    <li> {{ question.choice3 }} </li>
+                    <li> {{ question.choice4 }} </li>
+                </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+</body>
+
+
