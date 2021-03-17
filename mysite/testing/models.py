@@ -17,5 +17,10 @@ class Questions(models.Model):
     choice3 = models.CharField(max_length=100)
     choice4 = models.CharField(max_length=100)
 
+    is_correct_1 = models.BooleanField(default=True)
+    is_correct_2 = models.BooleanField(default=False)
+    is_correct_3 = models.BooleanField(default=False)
+    is_correct_4 = models.BooleanField(default=False)
+
     def __str__(self):
         return self.question_text
