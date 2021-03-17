@@ -1,26 +1,27 @@
 from django.db import models
 
-# Create your models here.
-class Tests(models.Model):
-    test_name = models.CharField(max_length=40)
-    test_description = models.CharField(max_length=200)
+# It needs to be reworked
+class Test(models.Model):
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.test_name
+        return self.name
 
 
-class Questions(models.Model):
-    test_id = models.ForeignKey(Tests, on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=200)
-    choice1 = models.CharField(max_length=100)
-    choice2 = models.CharField(max_length=100)
-    choice3 = models.CharField(max_length=100)
-    choice4 = models.CharField(max_length=100)
-
-    is_correct_1 = models.BooleanField(default=True)
-    is_correct_2 = models.BooleanField(default=False)
-    is_correct_3 = models.BooleanField(default=False)
-    is_correct_4 = models.BooleanField(default=False)
+class Question(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.question_text
+        return self.text
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
+

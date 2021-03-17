@@ -1,17 +1,21 @@
 from django.contrib import admin
 
-from .models import Questions, Tests
+from .models import Test, Question, Answer
 # Register your models here.
 
+class AnswersInline(admin.StackedInline):
+    model = Answer
+    extra = 4
+
 class QuestionsInline(admin.StackedInline):
-    model = Questions
+    model = Question
     extra = 10
 
 class TestsAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Name', {'fields': ['test_name', 'test_description',]}),
+        ('Name', {'fields': ['name', 'description',]}),
     ]
     inlines = [QuestionsInline]
 
-admin.site.register(Tests, TestsAdmin)
+admin.site.register(Test, TestsAdmin)
 
