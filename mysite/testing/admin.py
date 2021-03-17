@@ -5,11 +5,11 @@ from .models import Test, Question, Answer
 
 class AnswersInline(admin.TabularInline):
     model = Answer
-    extra = 4
+    extra = 2
 
 class QuestionsInline(admin.StackedInline):
     model = Question
-    extra = 10
+    extra = 1
 
 class QuestionsAdmin(admin.ModelAdmin):
     fieldsets = [
