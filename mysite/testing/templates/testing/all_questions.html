@@ -1,28 +1,25 @@
 <!DOCTYPE html>
-
 <head lang="en">
     <meta charset="UTF-8" title="All Questions">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All questions</title>
 </head>
 
 <body>
     <div>
-        {% if questions_list|length < 1 %} <h3>There is no Questions in here.</h3>
-            {% else %}
+        {% if data|length < 1 %} 
+            <h3>There is no Questions in here.</h3>
+        {% else %}
             <h1>All questions list</h1>
-            <table>
-                {% for question in questions_list %}
-
-                <tr>{{ question.question_text }}</tr>
+                {% for question, answers in data.items %}
+                <tr>{{ question }}</tr>
                 <tr>
-                    <li> {{ question.choice1 }} </li>
-                    <li> {{ question.choice2 }} </li>
-                    <li> {{ question.choice3 }} </li>
-                    <li> {{ question.choice4 }} </li>
+                    {% for answer in answers %}
+                    <li>{{answer}}</li>
+                    {% endfor %}
                 </tr>
-
                 {% endfor %}
-
-            </table>
-            {% endif %}
+        {% endif %}
     </div>
 </body>
