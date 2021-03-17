@@ -1,14 +1,16 @@
 <!DOCTYPE html>
+
 <head lang="en">
     <meta charset="UTF-8" title="All Questions">
 </head>
+
 <body>
     <div>
-        <h1>All questions list</h1>
-
-        <table>
-
-            {% for question in questions_list %}
+        {% if questions_list|length < 1 %} <h3>There is no Questions in here.</h3>
+            {% else %}
+            <h1>All questions list</h1>
+            <table>
+                {% for question in questions_list %}
 
                 <tr>{{ question.question_text }}</tr>
                 <tr>
@@ -18,11 +20,9 @@
                     <li> {{ question.choice4 }} </li>
                 </tr>
 
-            {% endfor %}
+                {% endfor %}
 
-        </table>
-
+            </table>
+            {% endif %}
     </div>
 </body>
-
-
