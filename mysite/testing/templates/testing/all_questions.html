@@ -1,25 +1,23 @@
-<!DOCTYPE html>
-<head lang="en">
-    <meta charset="UTF-8" title="All Questions">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All questions</title>
-</head>
+{% extends 'testing/basic_template.html'%}
 
-<body>
-    <div>
-        {% if data|length < 1 %} 
-            <h3>There is no Questions in here.</h3>
-        {% else %}
-            <h1>All questions list</h1>
-                {% for question, answers in data.items %}
-                <tr>{{ question }}</tr>
-                <tr>
-                    {% for answer in answers %}
-                    <li>{{answer}}</li>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-        {% endif %}
-    </div>
-</body>
+{% block head %}
+<title>All questions</title>
+{% endblock %}
+
+{% block body %}
+<div>
+    {% if data|length < 1 %}
+        <h3>There is no Questions in here.</h3>
+    {% else %}
+        <h1>All questions list</h1>
+        {% for question, answers in data.items %}
+        <tr>{{ question }}</tr>
+        <tr>
+            {% for answer in answers %}
+            <li>{{answer}}</li>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
