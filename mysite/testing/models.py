@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.db import models
 
-# It needs to be reworked
+
 class Test(models.Model):
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=200)
@@ -26,4 +27,11 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class UserTests(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    test_in_process = models.OneToOneField(Test, on_delete=models.CASCADE)
+    question_in_process = models.SmallIntegerField(default=0)
+
 
