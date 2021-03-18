@@ -9,13 +9,14 @@
 <body>
     <h1>Tests</h1>
     <section>
-        {% if tests|length > 1 %}
+        {% if tests|length < 1 %}
         <p>There is no tests avaliable.</p>
         {% else %}
         <div>
             {% for test in tests %}
-            <h6>{{ test.name }}</h6>
-
+            <a href="{{ test.pk }}/testing">{{ test.name }}</a>
+            <p>{{ test.description }}</p>
+            <p>{{ test.pub_date }}</p>
             {% endfor %}
         </div>
         {% endif %}
