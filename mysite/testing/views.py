@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse
 
@@ -11,7 +11,6 @@ class AllQuestionsView(generic.ListView):
 
 
     def get_queryset(self):
-        questions = []
         answers = {}
 
         for answer in Answer.objects.all():
@@ -19,7 +18,6 @@ class AllQuestionsView(generic.ListView):
                 answers[answer.question.text].append(answer.text)
             else:
                 answers[answer.question.text] = [answer.text,]
-                questions.append(answer.question)
         print(answers)
         return answers
 
@@ -27,9 +25,9 @@ class AllQuestionsView(generic.ListView):
 class TestsView(generic.ListView):
     template_name = 'testing/tests.html'
     context_object_name = 'tests'
-
+    
     def get_queryset(self):
-        return Test.objects.all()
+        return Test.objects.order_by('-pub_date')
 
 
 def MainPage(request):
