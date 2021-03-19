@@ -34,6 +34,8 @@ class TestsView(generic.ListView):
 
 
 def TestingUser(request, pk):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect('/tests')
     if request.method == 'POST':
         pass
     else:
@@ -54,16 +56,29 @@ def RegisterUser(request):
             return HttpResponse('Registration is success!')
     else:
         form = UserCreationForm()
-        return render(request, 'testing/reg.html', {'form': form,})
+        return render(request, 'testing/signup.html', {'form': form,})
+
+
+def LoginUser(request):
+    if request.method == "POST":
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'testing/signin.html')
+    else:
+        if request.user.is_authenticated:
+            return HttpResponse('You are already logged in.')
+        else:
+            return render(request, 'testing/signin.html')
 
 
 def MainPage(request):
-    print(request.user)
     if request.method == "POST":
         if request.POST['send_to'] == 'Questions':
-            return HttpResponseRedirect('questions')
+            return HttpResponseRedirect('/questions/')
         elif request.POST['send_to'] == 'Tests':
-            return HttpResponseRedirect('tests/')
+            return HttpResponseRedirect('/tests/')
         else:
             return HttpResponse('An Error has occured.')
     elif request.method == "GET":
