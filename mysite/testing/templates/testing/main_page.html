@@ -6,7 +6,9 @@
 
 {% block body %}
 <form method="post">{% csrf_token %}
-    <input type="submit" name="Questions" value="Questions" />
-    <input type="submit" name="Tests" value="Tests" />
+    <input type="submit" name="send_to" value="Questions" />
+</form>
+<form method="post">{% csrf_token %}
+    <input type="submit" name="send_to" value="Tests" />
 </form>
 {% endblock %}

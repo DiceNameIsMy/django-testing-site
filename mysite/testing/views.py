@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Context
 from django.views import generic
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Test, Question, Answer
 
@@ -58,4 +58,14 @@ def RegisterUser(request):
 
 
 def MainPage(request):
-    return render(request, 'testing/main_page.html')
+    if request.method == "POST":
+        if request.POST['send_to'] == 'Questions':
+            return HttpResponseRedirect('questions')
+        elif request.POST['send_to'] == 'Tests':
+            return HttpResponseRedirect('tests/')
+        else:
+            return HttpResponse('An Error has occured.')
+    elif request.method == "GET":
+        return render(request, 'testing/main_page.html')
+    else:
+        return render(request, 'testing/main_page.html')
