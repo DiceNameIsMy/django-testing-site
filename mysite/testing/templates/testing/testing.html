@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'testing/basic.html'%}
+
+{% block head %}
     <title>Fuck</title>
-</head>
-<body>
+{% endblock %}
+
+{% block body %}
     <p>It does work bro.</p>
     {{ pk }}
-</body>
-</html>
+    <form method="post">
+        {% csrf_token %}
+
+    </form>
+{% endblock %}
