@@ -58,6 +58,7 @@ def RegisterUser(request):
 
 
 def MainPage(request):
+    print(request.user)
     if request.method == "POST":
         if request.POST['send_to'] == 'Questions':
             return HttpResponseRedirect('questions')
