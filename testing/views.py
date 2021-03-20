@@ -65,7 +65,7 @@ def LoginUser(request):
         if user is not None:
             return HttpResponseRedirect('/')
         else:
-            return render(request, 'testing/signin.html')
+            return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
     else:
         if request.user.is_authenticated:
             return HttpResponse('You are already logged in.')
@@ -75,12 +75,8 @@ def LoginUser(request):
 
 def MainPage(request):
     if request.method == "POST":
-        if request.POST['send_to'] == 'Questions':
-            return HttpResponseRedirect('/questions/')
-        elif request.POST['send_to'] == 'Tests':
-            return HttpResponseRedirect('/tests/')
-        else:
-            return HttpResponse('An Error has occured.')
+        redir = request.POST['send_to'].lower()
+        return HttpResponseRedirect(f'/{redir}/')
     elif request.method == "GET":
         return render(request, 'testing/main_page.html')
     else:
