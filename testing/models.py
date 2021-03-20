@@ -7,6 +7,7 @@ class Test(models.Model):
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=200)
     pub_date = models.DateField(default=now)
+    questions_amount = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -34,5 +35,6 @@ class UserTests(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     test_in_process = models.OneToOneField(Test, on_delete=models.CASCADE)
     question_in_process = models.SmallIntegerField(default=0)
+    score = models.SmallIntegerField(default=0)
 
 
