@@ -1,14 +1,12 @@
 {% extends 'testing/basic.html'%}
 
 {% block head %}
-    <title>Fuck</title>
+    <title>Testing</title>
 {% endblock %}
 
 {% block body %}
-    <p>It does work bro.</p>
-    {{ pk }}
-    <form method="post">
-        {% csrf_token %}
-
-    </form>
+<h2>{{ test.name }}</h2>
+<h3>{{ test.description }}</h3>
+<p>{{ test.pub_date }}</p>
+<a href="{{ first_question }}">Start</a>
 {% endblock %}
