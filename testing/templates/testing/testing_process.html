@@ -1,0 +1,19 @@
+{% extends 'testing/basic.html'%}
+
+{% block head %}
+    <title>Testing</title>
+{% endblock %}
+
+{% block body %}
+<h2>{{ test_name }}</h2>
+
+<p>{{ question }}</p>
+<form method="POST">
+    {% csrf_token %}
+    {% for answer in answers %}
+    <p><input type="checkbox" value="{{answer.pk}}">   {{ answer.text }}</p>
+    {% endfor %}
+    <br><input type="submit" value="Next">
+</form>
+
+{% endblock %}
