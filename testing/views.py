@@ -5,7 +5,7 @@ from django.template import Context
 from django.views import generic
 from django.http import HttpResponse, HttpResponseRedirect
 
-from .models import Test, Question, Answer
+from .models import Test, Question, Answer, UserTests
 
 # Create your views here.
 class AllQuestionsView(generic.ListView):
@@ -33,14 +33,28 @@ class TestsView(generic.ListView):
         return Test.objects.order_by('-pub_date')
 
 
-def TestingUser(request, pk):
+def TestingPage(request, pk):
     if not request.user.is_authenticated:
         return HttpResponseRedirect('/tests')
-    if request.method == 'POST':
-        pass
-    else:
-        context = {}
+    if request.method == 'GET':
+        test = Test.objects.get(pk=pk)
+        context = {
+            'test': test,
+            'first_question': Question.objects.get(test=test, question_num=1).pk
+        }
         return render(request, 'testing/testing.html', context)
+
+def TestingUser(request, pk, q_pk):
+    if request.method == 'GET':
+        test = Test.objects.get(pk=pk) 
+        question = Question.objects.get(pk=q_pk)
+
+        context = {
+            'test_name': test.name,
+            'question': question,
+            'answers': Answer.objects.filter(question=question),
+            }
+        return render(request, 'testing/testing_process.html', context)
 
 
 # it needs to be reworked
