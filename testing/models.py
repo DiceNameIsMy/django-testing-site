@@ -15,6 +15,7 @@ class Test(models.Model):
 class Question(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
+    question_num = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return self.text
