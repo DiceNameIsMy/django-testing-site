@@ -25,7 +25,7 @@ class QuestionsAdmin(admin.ModelAdmin):
 
 class TestsAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Name', {'fields': ['name', 'description',]}),
+        ('Name', {'fields': ['name', 'description', 'questions_amount']}),
     ]
     inlines = [QuestionsInline]
 
