@@ -7,8 +7,8 @@
 {% block body %}
 <form method="post">{% csrf_token %}
     <input type="submit" name="send_to" value="Questions" />
-</form>
-<form method="post">{% csrf_token %}
     <input type="submit" name="send_to" value="Tests" />
+    <input type="submit" name="send_to" value="Sign up" />
+    <input type="submit" name="send_to" value="Sign in" />
 </form>
 {% endblock %}
