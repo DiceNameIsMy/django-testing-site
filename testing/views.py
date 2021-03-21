@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
@@ -102,22 +102,29 @@ def RegisterUser(request):
 
 def LoginUser(request):
     if request.method == "POST":
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user is not 'AnonymousUser':
-            return HttpResponseRedirect('/')
+        if str(request.POST['log']) == "Logout":
+            logout(request)
+        elif request.POST['log'] == "Login":
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/')
+            else:
+                return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
         else:
-            return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
+            return HttpResponseRedirect('Fuck')
+
+    if request.user.is_authenticated:
+        return render(request, 'testing/signin.html', {'is_auth': True})
     else:
-        if request.user.is_authenticated:
-            return HttpResponse('You are already logged in.')
-        else:
-            return render(request, 'testing/signin.html')
+        return render(request, 'testing/signin.html', {'is_auth': False})
 
 
 def MainPage(request):
     if request.method == "POST":
-        redir = request.POST['send_to'].lower()
-        return HttpResponseRedirect(f'/{redir}/')
+        # make posted message lowercase and delete spaces
+        message = "".join(request.POST['send_to'].lower().split()) 
+        return HttpResponseRedirect(f'/{message}/')
     elif request.method == "GET":
         return render(request, 'testing/main_page.html')
     else:
