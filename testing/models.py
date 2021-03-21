@@ -33,8 +33,8 @@ class Answer(models.Model):
 
 class UserTests(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    test_in_process = models.OneToOneField(Test, on_delete=models.CASCADE)
-    question_in_process = models.SmallIntegerField(default=0)
+    test_in_process = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, blank=True)
+    question_in_process = models.SmallIntegerField(default=1)
     score = models.SmallIntegerField(default=0)
 
 
