@@ -35,26 +35,37 @@ class TestsView(generic.ListView):
 
 
 def TestingPage(request, pk):
+    test = Test.objects.get(pk=pk)
+
     if not request.user.is_authenticated:
         return HttpResponseRedirect('/tests')
     if request.method == 'GET':
-        test = Test.objects.get(pk=pk)
         context = {
             'test': test,
-            'first_question': Question.objects.get(test=test, question_num=1).pk
+            'first_question': Question.objects.get(test=test, question_num=1).pk,
         }
         return render(request, 'testing/testing.html', context)
+    elif request.method == 'POST':
+        if request.POST['start'] == 'Start':
+            user = User.objects.get(username=request.user.username) # get user that is logged in
+            user_test = UserTests(user=user, test_in_process=test) # create users usertests model
+            user_test.save()
+            return HttpResponseRedirect('1')
 
 
 def TestingUser(request, pk, q_pk):
     test = Test.objects.get(pk=pk) 
-    question = Question.objects.get(pk=q_pk, test=test)
+    question = Question.objects.get(question_num=q_pk, test=test)
 
     if request.method == "POST":
         # contains pk's of correct answers
         correct_answers_pk = [str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)] 
         # contains pk's of posted answers
         posted_answers = request.POST.getlist('answers')
+        
+        user = User.objects.get(username=request.user.username)
+        usertest = UserTests.objects.get(user=user)
+        usertest.question_in_process += 1
 
         for answer in correct_answers_pk: 
             if answer in posted_answers: #if correct answer is in posted answers delete it from there
@@ -63,14 +74,14 @@ def TestingUser(request, pk, q_pk):
                 break
         else: #if all answers was correct
             if posted_answers == []: #if no answers left(all correct answers was deleted)
-                user = User.objects.get(username=request.user.username)
-                UserTests.objects.get(user=user).score += 1 # add one point to user score
+                usertest.score += 1 # add one point to user score
+        
+        usertest.save()
 
         try:
-            link = Question.objects.get(pk=q_pk+1, test=test)
-            return HttpResponseRedirect(f'{link.pk}')
+            return HttpResponseRedirect(f'{q_pk + 1}')
         except Exception:
-            return HttpResponseRedirect('/tests/1/completed')
+            return HttpResponseRedirect(f'/tests/{pk}/completed')
 
     elif request.method == 'GET':
         question = Question.objects.get(pk=q_pk, test=test)
