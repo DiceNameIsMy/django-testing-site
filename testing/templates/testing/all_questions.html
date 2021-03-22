@@ -6,18 +6,22 @@
 
 {% block body %}
 <div>
-    {% if data|length < 1 %}
-        <h3>There is no Questions in here.</h3>
-    {% else %}
-        <h1>All questions list</h1>
-        {% for question, answers in data.items %}
-        <tr>{{ question }}</tr>
-        <tr>
-            {% for answer in answers %}
-            <li>{{answer}}</li>
-            {% endfor %}
-        </tr>
+{% if data|length < 1 %}
+    <h3>There is no Questions in here.</h3>
+{% else %}
+    <h1>All questions list</h1>
+    {% for question, answers in data.items %}
+    <tr>{{ question }}</tr>
+    <tr>
+        {% for answer in answers %}
+        <li>{{answer}}</li>
         {% endfor %}
-    {% endif %}
+    </tr>
+    {% endfor %}
+{% endif %}
 </div>
+
+<form action="/">
+    <input type="submit" value="Go back" />
+  </form>
 {% endblock %}

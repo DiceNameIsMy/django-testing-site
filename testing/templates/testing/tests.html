@@ -5,18 +5,22 @@
 {% endblock %}
 
 {% block body %}
-    <h2>Tests</h2>
-    <section>
-        {% if tests|length < 1 %}
+<h2>Tests</h2>
+<section>
+    <!-- {% if tests|length < 1 %}
         <p>There is no tests avaliable.</p>
-        {% else %}
+    {% else %} -->
         <div>
-            {% for test in tests %}
+        {% for test in tests %}
             <a href="{{ test.pk }}/testing">{{ test.name }}</a>
             <p>{{ test.description }}</p>
             <p>{{ test.pub_date }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </section>
+        {% endfor %}
+        <!-- </div>
+    {% endif %} -->
+</section>
+
+<form action="/">
+    <input type="submit" value="Go back" />
+</form>
 {% endblock %}
