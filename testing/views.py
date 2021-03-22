@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Context
-from django.views import generic
+from django.views import View, generic
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Test, Question, Answer, UserTests
@@ -26,31 +26,33 @@ class AllQuestionsView(generic.ListView):
         return answers
 
 
-class TestsView(generic.ListView):
-    template_name = 'testing/tests.html'
-    context_object_name = 'tests'
+class TestsView(View):
     
-    def get_queryset(self):
-        return Test.objects.order_by('-pub_date')
+    def get(self, request, *args, **kwargs):
+        context = {'tests': Test.objects.order_by('-pub_date')}
+        return render(request, 'testing/tests.html', context)
 
 
-def TestingPage(request, pk):
-    test = Test.objects.get(pk=pk)
 
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect('/tests')
-    if request.method == 'GET':
-        context = {
-            'test': test,
-            'first_question': Question.objects.get(test=test, question_num=1).pk,
-        }
-        return render(request, 'testing/testing.html', context)
-    elif request.method == 'POST':
-        if request.POST['start'] == 'Start':
-            user = User.objects.get(username=request.user.username) # get user that is logged in
-            user_test = UserTests(user=user, test_in_process=test) # create users usertests model
-            user_test.save()
-            return HttpResponseRedirect('1')
+class TestingPageView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/tests')
+        test = Test.objects.get(pk=pk)
+
+        return render(request, 'testing/testing.html', {'test': test})
+
+    def post(self, request, pk, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/tests')
+        
+        test = Test.objects.get(pk=pk)
+        user = User.objects.get(username=request.user.username) # get user that is logged in
+        user_test = UserTests(user=user, test_in_process=test) # create user usertests model
+        user_test.save()
+
+        return HttpResponseRedirect('1')
 
 
 def TestingUser(request, pk, q_pk):
@@ -93,9 +95,14 @@ def TestingUser(request, pk, q_pk):
         return render(request, 'testing/testing_process.html', context)
 
 
-# it needs to be reworked
-def RegisterUser(request):
-    if request.method == 'POST':
+
+class RegisterUserView(View):
+
+    def get(self, request, *args, **kwargs):
+        form = UserCreationForm()
+        return render(request, 'testing/signup.html', {'form': form,})
+
+    def post(self, request, *args, **kwargs):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
@@ -106,14 +113,16 @@ def RegisterUser(request):
             return HttpResponse('Registration is success!')
         else:
             return HttpResponse('Your form is invalid!')
-    else:
-        form = UserCreationForm()
-        return render(request, 'testing/signup.html', {'form': form,})
 
 
-def LoginUser(request):
-    if request.method == "POST":
-        if str(request.POST['log']) == "Logout":
+
+class LoginUserView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['log'] == "Logout":
             logout(request)
         elif request.POST['log'] == "Login":
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
@@ -122,21 +131,15 @@ def LoginUser(request):
                 return HttpResponseRedirect('/')
             else:
                 return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
-        else:
-            return HttpResponseRedirect('Fuck')
-
-    if request.user.is_authenticated:
-        return render(request, 'testing/signin.html', {'is_auth': True})
-    else:
-        return render(request, 'testing/signin.html', {'is_auth': False})
 
 
-def MainPage(request):
-    if request.method == "POST":
-        # make posted message lowercase and delete spaces
+
+class MainPageView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'testing/main_page.html')
+
+    def post(self, request, *args, **kwargs):
         message = "".join(request.POST['send_to'].lower().split()) 
         return HttpResponseRedirect(f'/{message}/')
-    elif request.method == "GET":
-        return render(request, 'testing/main_page.html')
-    else:
-        return render(request, 'testing/main_page.html')
+    
