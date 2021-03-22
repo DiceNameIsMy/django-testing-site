@@ -8,22 +8,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Test, Question, Answer, UserTests
 
-# Create your views here.
-class AllQuestionsView(generic.ListView):
-    template_name = 'testing/all_questions.html'
-    context_object_name = 'data'
 
+class MainPageView(View):
 
-    def get_queryset(self):
-        answers = {}
+    def get(self, request, *args, **kwargs):
+        return render(request, 'testing/main_page.html')
 
-        for answer in Answer.objects.all():
-            if answer.question.text in answers:
-                answers[answer.question.text].append(answer.text) # if question to witch answer is related exists -> add to {question_text: [answer_obj,]}
-            else:
-                answers[answer.question.text] = [answer.text,] # if question to witch answer is related doesn't exist -> add {question_text: [answer_obj,]}
+    def post(self, request, *args, **kwargs):
+        message = "".join(request.POST['send_to'].lower().split()) 
+        return HttpResponseRedirect(f'/{message}/')
 
-        return answers
 
 
 class TestsView(View):
@@ -55,37 +49,19 @@ class TestingPageView(View):
         return HttpResponseRedirect('1')
 
 
-def TestingUser(request, pk, q_pk):
-    test = Test.objects.get(pk=pk) 
-    question = Question.objects.get(question_num=q_pk, test=test)
 
-    if request.method == "POST":
-        # contains pk's of correct answers
-        correct_answers_pk = [str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)] 
-        # contains pk's of posted answers
-        posted_answers = request.POST.getlist('answers')
-        
-        user = User.objects.get(username=request.user.username)
-        usertest = UserTests.objects.get(user=user)
-        usertest.question_in_process += 1
+class TestingUserView(View):
 
-        for answer in correct_answers_pk: 
-            if answer in posted_answers: #if correct answer is in posted answers delete it from there
-                posted_answers.remove(answer)
-            else: # if correct answer is not in posted answers break loop and head to the next question
-                break
-        else: #if all answers was correct
-            if posted_answers == []: #if no answers left(all correct answers was deleted)
-                usertest.score += 1 # add one point to user score
-        
-        usertest.save()
-
-        try:
-            return HttpResponseRedirect(f'{q_pk + 1}')
-        except Exception:
-            return HttpResponseRedirect(f'/tests/{pk}/completed')
-
-    elif request.method == 'GET':
+    def check_answer(self, question, answers):
+        correct_answers = {str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)}
+        print(correct_answers, answers)
+        if correct_answers == answers:
+            return True
+        else:
+            return False
+    
+    def get(self, request, pk, q_pk, *args, **kwargs):
+        test = Test.objects.get(pk=pk) 
         question = Question.objects.get(pk=q_pk, test=test)
         context = {
             'test_name': test.name,
@@ -93,6 +69,42 @@ def TestingUser(request, pk, q_pk):
             'answers': Answer.objects.filter(question=question),
             }
         return render(request, 'testing/testing_process.html', context)
+        
+    def post(self, request, pk, q_pk, *args, **kwargs): # it can be done better
+        test = Test.objects.get(pk=pk) 
+        question = Question.objects.get(pk=q_pk, test=test)
+        posted_answers = set(request.POST.getlist('answers'))
+        
+        user = User.objects.get(username=request.user.username)
+        usertest = UserTests.objects.get(user=user)
+
+        if self.check_answer(question, posted_answers):
+            usertest.score += 1
+        
+        if test.questions_amount == q_pk:
+            return HttpResponseRedirect(f'/tests/{pk}/completed')   
+        else:
+            usertest.question_in_process += 1
+            usertest.save()
+            return HttpResponseRedirect(f'{q_pk + 1}')
+
+
+
+class LoginUserView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['log'] == "Logout":
+            logout(request)
+        elif request.POST['log'] == "Login":
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/')
+            else:
+                return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
 
 
 
@@ -116,30 +128,18 @@ class RegisterUserView(View):
 
 
 
-class LoginUserView(View):
+class AllQuestionsView(generic.ListView):
+    template_name = 'testing/all_questions.html'
+    context_object_name = 'data'
 
-    def get(self, request, *args, **kwargs):
-        return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
+    def get_queryset(self):
+        answers = {}
 
-    def post(self, request, *args, **kwargs):
-        if request.POST['log'] == "Logout":
-            logout(request)
-        elif request.POST['log'] == "Login":
-            user = authenticate(username=request.POST['username'], password=request.POST['password'])
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect('/')
+        for answer in Answer.objects.all():
+            if answer.question.text in answers:
+                answers[answer.question.text].append(answer.text) # if question to witch answer is related exists -> add to {question_text: [answer_obj,]}
             else:
-                return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
+                answers[answer.question.text] = [answer.text,] # if question to witch answer is related doesn't exist -> add {question_text: [answer_obj,]}
 
-
-
-class MainPageView(View):
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'testing/main_page.html')
-
-    def post(self, request, *args, **kwargs):
-        message = "".join(request.POST['send_to'].lower().split()) 
-        return HttpResponseRedirect(f'/{message}/')
+        return answers
     
