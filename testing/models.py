@@ -36,5 +36,3 @@ class UserTests(models.Model):
     test_in_process = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, blank=True)
     question_in_process = models.SmallIntegerField(default=1)
     score = models.SmallIntegerField(default=0)
-
-
