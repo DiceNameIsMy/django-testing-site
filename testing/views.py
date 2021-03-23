@@ -150,21 +150,3 @@ class RegisterUserView(View):
             return HttpResponse('Registration is success!')
         else:
             return HttpResponse('Your form is invalid!')
-
-
-
-class AllQuestionsView(generic.ListView):
-    template_name = 'testing/all_questions.html'
-    context_object_name = 'data'
-
-    def get_queryset(self):
-        answers = {}
-
-        for answer in Answer.objects.all():
-            if answer.question.text in answers:
-                answers[answer.question.text].append(answer.text) # if question to witch answer is related exists -> add to {question_text: [answer_obj,]}
-            else:
-                answers[answer.question.text] = [answer.text,] # if question to witch answer is related doesn't exist -> add {question_text: [answer_obj,]}
-
-        return answers
-    
