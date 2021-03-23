@@ -12,7 +12,7 @@
     {% else %} -->
         <div>
         {% for test in tests %}
-            <a href="{{ test.pk }}/testing">{{ test.name }}</a>
+            <a href="{{ test.pk }}">{{ test.name }}</a>
             <p>{{ test.description }}</p>
             <p>{{ test.pub_date }}</p>
         {% endfor %}
