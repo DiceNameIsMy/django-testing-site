@@ -19,10 +19,6 @@
 </form>
 {% else %}
 <p>You are already signed in</p>
-<form method="post">
-    {% csrf_token %} 
-    <input type="submit" name="log" value="Logout">
-</form>
 {% endif %}
 
 <form action="/">
