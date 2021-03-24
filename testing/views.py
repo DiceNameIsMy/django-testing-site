@@ -120,16 +120,12 @@ class LoginUserView(View):
         return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
 
     def post(self, request, *args, **kwargs):
-        if request.POST['log'] == "Logout":
-            logout(request)
-            return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
-        elif request.POST['log'] == "Login":
-            user = authenticate(username=request.POST['username'], password=request.POST['password'])
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect('/')
-            else:
-                return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
 
 
 
