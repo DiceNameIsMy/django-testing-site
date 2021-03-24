@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
-from .models import Test, Question, Answer, UserTests
+from .models import Test, Question, Answer, UserTest
 # Register your models here.
 
 class AnswersInline(admin.TabularInline):
@@ -14,7 +14,7 @@ class QuestionsInline(admin.StackedInline):
     extra = 1
 
 class UserTestsInline(admin.TabularInline):
-    model = UserTests
+    model = UserTest
     extra = 0
 
 class QuestionsAdmin(admin.ModelAdmin):

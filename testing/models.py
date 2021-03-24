@@ -31,7 +31,7 @@ class Answer(models.Model):
         return self.text
 
 
-class UserTests(models.Model):
+class UserTest(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     test_in_process = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, blank=True)
     question_in_process = models.SmallIntegerField(default=1)

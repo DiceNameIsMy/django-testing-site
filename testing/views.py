@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views import View, generic
 from django.http import HttpResponse, HttpResponseRedirect
 
-from .models import Test, Question, Answer, UserTests
+from .models import Test, Question, Answer, UserTest
 
 
 class MainPageView(View):
@@ -39,10 +39,10 @@ class TestingPageView(View):
     def post(self, request, pk, *args, **kwargs):
         test = Test.objects.get(pk=pk)
         user = User.objects.get(username=request.user.username) # get user that is logged in
-        user_tests = UserTests.objects.filter(user=user, test_in_process=test)
+        user_tests = UserTest.objects.filter(user=user, test_in_process=test)
 
         if not user_tests:
-            user_test = UserTests(user=user, test_in_process=test) # create user usertests model
+            user_test = UserTest(user=user, test_in_process=test) # create user usertests model
             user_test.save()
             return HttpResponseRedirect(f'testing/1')
         else:  
@@ -76,7 +76,7 @@ class TestingUserView(View):
         posted_answers = set(request.POST.getlist('answers'))
         
         user = User.objects.get(username=request.user.username)
-        usertest = UserTests.objects.get(user=user)
+        usertest = UserTest.objects.get(user=user)
 
         if self.check_answer(question, posted_answers):
             usertest.score += 1
@@ -96,7 +96,7 @@ class TestCompletedView(View):
     def get(self, request, pk, *args, **kwargs):
         user = User.objects.get(username=request.user.username)
         test = Test.objects.get(pk=pk)
-        user_test = UserTests.objects.get(user=user, test_in_process=test)
+        user_test = UserTest.objects.get(user=user, test_in_process=test)
         percentage = str(int(user_test.score) / int(test.questions_amount) * 100)
         print(percentage)
 
@@ -105,7 +105,7 @@ class TestCompletedView(View):
             'questions_amount': test.questions_amount,
             'percentage': percentage,
             }
-        UserTests.objects.filter(user=user, test_in_process=test).delete()
+        UserTest.objects.filter(user=user, test_in_process=test).delete()
 
         return render(request, 'testing/completed.html', context)
 
