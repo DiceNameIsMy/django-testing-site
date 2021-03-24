@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, authenticate
@@ -125,7 +126,8 @@ class LoginUserView(View):
             login(request, user)
             return HttpResponseRedirect('/')
         else:
-            return render(request, 'testing/signin.html', {'message': 'Please enter the correct username and password.'})
+            context = {'is_auth': request.user.is_authenticated, 'message': 'Please enter the correct username and password.'}
+            return render(request, 'testing/signin.html', context)
 
 
 
@@ -161,4 +163,26 @@ class LogoutUserView(View):
             return HttpResponseRedirect('/')
         else:
             return HttpResponseRedirect('/')
+
+
+
+class DeleteUserView(LoginRequiredMixin, View):
+    login_url='/signin/'
+
+    def get(self, request, pk, *args, **kwargs):
+        if request.user.username == User.objects.get(pk=pk).username:
+            context = {'username': request.user.username}
+            return render(request, 'testing/delete_user.html', context)
+        else:
+            context = {'access_denied': True}
+            return render(request, 'testing/delete_user.html', context)
+            
+    def post(self, request, pk, *args, **kwargs):
+        if request.POST['delete'] == "Yes":
+            user = User.objects.get(pk=pk)
+            user.delete()
+            return HttpResponseRedirect('/')
+        else:
+            return HttpResponseRedirect('/')
+
 
