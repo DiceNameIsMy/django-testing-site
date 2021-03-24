@@ -1,0 +1,14 @@
+{% extends 'testing/basic.html'%}
+
+{% block head %}
+<title>Logout</title>
+{% endblock %}
+
+{% block body %}
+<form method="POST">
+    {% csrf_token %}
+    <label>{{ username }}, are you sure you want to logout?</label>
+    <input type="submit" name="logout" value="No">
+    <input type="submit" name="logout" value="Yes">
+</form>
+{% endblock %}
