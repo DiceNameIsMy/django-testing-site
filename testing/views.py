@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render 
-from django.views import View, generic
+from django.views import View
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Test, Question, Answer, UserTest
@@ -150,3 +150,19 @@ class RegisterUserView(View):
             return HttpResponse('Registration is success!')
         else:
             return HttpResponse('Your form is invalid!')
+
+    
+
+class LogoutUserView(View):
+
+    def get(self, request, *args, **kwargs):
+        context = {'username': request.user.username}
+        return render(request, 'testing/logout.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        if request.POST['logout'] == "Yes":
+            logout(request)
+            return HttpResponseRedirect('/')
+        else:
+            return HttpResponseRedirect('/')
+
