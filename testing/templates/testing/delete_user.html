@@ -1,0 +1,21 @@
+{% extends 'testing/basic.html'%}
+
+{% block head %}
+<title>Delete User</title>
+{% endblock %}
+
+{% block body %}
+{% if access_denied %}
+    <label>You can't delete this user</label>
+    <form action="/">
+        <input type="submit" value="Go back">
+    </form>
+{% else %}
+    <form method="POST">
+        {% csrf_token %}
+        <label>{{ username }}, are you sure you want to delete your account?<br></label>
+        <input type="submit" name="delete" value="No">
+        <input type="submit" name="delete" value="Yes">
+    </form>
+{% endif %}
+{% endblock %}
