@@ -12,5 +12,6 @@ urlpatterns = [
     path('signup/', views.RegisterUserView.as_view(), name='Sign up'),
     path('signin/', views.LoginUserView.as_view(), name='Sign in'),
     path('logout/', views.LogoutUserView.as_view(), name='Log out'),
+    # doesn't work properly, probably will be deleted because it wasn't in TD.
     path('delete/<int:pk>', views.DeleteUserView.as_view(), name='Delete User'),
 ]

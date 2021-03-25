@@ -165,7 +165,7 @@ class LogoutUserView(View):
             return HttpResponseRedirect('/')
 
 
-
+# doesn't work properly, probably will be deleted because it wasn't in TD.
 class DeleteUserView(LoginRequiredMixin, View):
     login_url='/signin/'
 
