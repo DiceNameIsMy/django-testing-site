@@ -37,7 +37,7 @@ class TestingPageView(LoginRequiredMixin, View):
         return render(request, 'testing/testing.html', {'test': test})
 
     def post(self, request, pk, *args, **kwargs):
-        question_num = check_if_test_in_progress(test_pk=pk, username=request.user.username)
+        question_num = get_quesiton_in_progress_or_create(test_pk=pk, username=request.user.username)
         return HttpResponseRedirect(f'testing/{question_num}')
 
 
@@ -45,41 +45,19 @@ class TestingPageView(LoginRequiredMixin, View):
 class TestingProcessView(LoginRequiredMixin, View):
     login_url='/signin/'
 
-    def check_answer(self, question, answers):
-        correct_answers = {str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)}
-        print(correct_answers, answers)
-        if correct_answers == answers:
-            return True
-        else:
-            return False
-    
-    def get(self, request, pk, q_pk, *args, **kwargs):
-        test = Test.objects.get(pk=pk) 
-        question = Question.objects.get(question_num=q_pk, test=test)
-        context = {
-            'test_name': test.name,
-            'question': question,
-            'answers': Answer.objects.filter(question=question),
-            }
+    def get(self, request, t_pk, q_pk, *args, **kwargs):
+        context = get_question_context(test_pk=t_pk, question_num_key=q_pk)
         return render(request, 'testing/testing_process.html', context)
         
-    def post(self, request, pk, q_pk, *args, **kwargs): # it can be done better
-        test = Test.objects.get(pk=pk) 
-        question = Question.objects.get(question_num=q_pk, test=test)
-        posted_answers = set(request.POST.getlist('answers'))
+    def post(self, request, t_pk, q_pk, *args, **kwargs): # it can be done better
+        answers = sorted(request.POST.getlist('answers'))
+        usertest = UserTest.objects.get(user=User.objects.get(username=request.user.username))
         
-        user = User.objects.get(username=request.user.username)
-        usertest = UserTest.objects.get(user=user)
+        post_answer(test_pk=t_pk, question_num_key=q_pk, usertest=usertest, answers=answers)
 
-        if self.check_answer(question, posted_answers):
-            usertest.score += 1
-            usertest.save()
-        
-        if test.questions_amount == q_pk:
-            return HttpResponseRedirect(f'/tests/{pk}/completed')   
+        if check_test_completed(test_pk=t_pk, question_num_key=q_pk, usertest=usertest):
+            return HttpResponseRedirect(f'/tests/{t_pk}/completed')   
         else:
-            usertest.question_in_process += 1
-            usertest.save()
             return HttpResponseRedirect(f'{q_pk + 1}')
 
 
