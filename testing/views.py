@@ -32,12 +32,12 @@ class TestsView(View):
 class TestingPageView(LoginRequiredMixin, View):
     login_url='/signin/'
 
-    def get(self, request, pk, *args, **kwargs):
-        test = Test.objects.get(pk=pk)
+    def get(self, request, t_pk, *args, **kwargs):
+        test = Test.objects.get(pk=t_pk)
         return render(request, 'testing/testing.html', {'test': test})
 
-    def post(self, request, pk, *args, **kwargs):
-        question_num = get_quesiton_in_progress_or_create(test_pk=pk, username=request.user.username)
+    def post(self, request, t_pk, *args, **kwargs):
+        question_num = get_quesiton_in_progress_or_create(test_pk=t_pk, username=request.user.username)
         return HttpResponseRedirect(f'testing/{question_num}')
 
 
@@ -65,9 +65,9 @@ class TestingProcessView(LoginRequiredMixin, View):
 class TestCompletedView(LoginRequiredMixin, View):
     login_url='/signin/'    
 
-    def get(self, request, pk, *args, **kwargs):
+    def get(self, request, t_pk, *args, **kwargs):
         user = User.objects.get(username=request.user.username)
-        test = Test.objects.get(pk=pk)
+        test = Test.objects.get(pk=t_pk)
         user_test = UserTest.objects.get(user=user, test_in_process=test)
         percentage = str(int(user_test.score) / int(test.questions_amount) * 100)
         print(percentage)
@@ -81,7 +81,7 @@ class TestCompletedView(LoginRequiredMixin, View):
 
         return render(request, 'testing/completed.html', context)
 
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, t_pk, *args, **kwargs):
         pass
 
 
@@ -141,17 +141,17 @@ class LogoutUserView(LoginRequiredMixin, View):
 class DeleteUserView(LoginRequiredMixin, View):
     login_url='/signin/'
 
-    def get(self, request, pk, *args, **kwargs):
-        if request.user.username == User.objects.get(pk=pk).username:
+    def get(self, request, u_pk, *args, **kwargs):
+        if request.user.username == User.objects.get(pk=u_pk).username:
             context = {'username': request.user.username}
             return render(request, 'testing/delete_user.html', context)
         else:
             context = {'access_denied': True}
             return render(request, 'testing/delete_user.html', context)
             
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, u_pk, *args, **kwargs):
         if request.POST['delete'] == "Yes":
-            user = User.objects.get(pk=pk)
+            user = User.objects.get(pk=u_pk)
             user.delete()
             return HttpResponseRedirect('/')
         else:
