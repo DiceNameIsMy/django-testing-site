@@ -29,13 +29,11 @@ class TestsView(View):
 
 
 
-class TestingPageView(View):
+class TestingPageView(LoginRequiredMixin, View):
+    login_url='/signin/'
 
     def get(self, request, pk, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect('/tests')
         test = Test.objects.get(pk=pk)
-
         return render(request, 'testing/testing.html', {'test': test})
 
     def post(self, request, pk, *args, **kwargs):
@@ -44,7 +42,8 @@ class TestingPageView(View):
 
 
 
-class TestingProcessView(View):
+class TestingProcessView(LoginRequiredMixin, View):
+    login_url='/signin/'
 
     def check_answer(self, question, answers):
         correct_answers = {str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)}
@@ -85,7 +84,8 @@ class TestingProcessView(View):
 
 
 
-class TestCompletedView(View):
+class TestCompletedView(LoginRequiredMixin, View):
+    login_url='/signin/'    
 
     def get(self, request, pk, *args, **kwargs):
         user = User.objects.get(username=request.user.username)
@@ -144,7 +144,8 @@ class RegisterUserView(View):
 
     
 
-class LogoutUserView(View):
+class LogoutUserView(LoginRequiredMixin, View):
+    login_url='/signin/'
 
     def get(self, request, *args, **kwargs):
         context = {'username': request.user.username}
