@@ -7,6 +7,7 @@ from django.views import View
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Test, Question, Answer, UserTest
+from .services import *
 
 
 class MainPageView(View):
@@ -38,20 +39,12 @@ class TestingPageView(View):
         return render(request, 'testing/testing.html', {'test': test})
 
     def post(self, request, pk, *args, **kwargs):
-        test = Test.objects.get(pk=pk)
-        user = User.objects.get(username=request.user.username) # get user that is logged in
-        user_tests = UserTest.objects.filter(user=user, test_in_process=test)
-
-        if not user_tests:
-            user_test = UserTest(user=user, test_in_process=test) # create user usertests model
-            user_test.save()
-            return HttpResponseRedirect(f'testing/1')
-        else:  
-            return HttpResponseRedirect(f'testing/{user_tests[0].question_in_process}')
+        question_num = check_if_test_in_progress(test_pk=pk, username=request.user.username)
+        return HttpResponseRedirect(f'testing/{question_num}')
 
 
 
-class TestingUserView(View):
+class TestingProcessView(View):
 
     def check_answer(self, question, answers):
         correct_answers = {str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)}
