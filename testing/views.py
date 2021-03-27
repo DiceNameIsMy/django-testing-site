@@ -66,20 +66,11 @@ class TestCompletedView(LoginRequiredMixin, View):
     login_url='/signin/'    
 
     def get(self, request, t_pk, *args, **kwargs):
-        user = User.objects.get(username=request.user.username)
-        test = Test.objects.get(pk=t_pk)
-        user_test = UserTest.objects.get(user=user, test_in_process=test)
-        percentage = str(int(user_test.score) / int(test.questions_amount) * 100)
-        print(percentage)
+        username = request.user.username
+        score = get_score_of_completed_test(t_pk, username)
+        complete_test(t_pk, username)
 
-        context = {
-            'score': user_test.score,
-            'questions_amount': test.questions_amount,
-            'percentage': percentage,
-            }
-        UserTest.objects.filter(user=user, test_in_process=test).delete()
-
-        return render(request, 'testing/completed.html', context)
+        return render(request, 'testing/completed.html', score)
 
     def post(self, request, t_pk, *args, **kwargs):
         pass
@@ -92,9 +83,9 @@ class LoginUserView(View):
         return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
 
     def post(self, request, *args, **kwargs):
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user is not None:
-            login(request, user)
+        attempt = try_to_login_user(username=request.POST['username'], raw_password=request.POST['password'], request=request)
+
+        if attempt:
             return HttpResponseRedirect('/')
         else:
             context = {'is_auth': request.user.is_authenticated, 'message': 'Please enter the correct username and password.'}
@@ -105,36 +96,31 @@ class LoginUserView(View):
 class RegisterUserView(View):
 
     def get(self, request, *args, **kwargs):
-        form = UserCreationForm()
-        return render(request, 'testing/signup.html', {'form': form,})
+        return render(request, 'testing/signup.html', {'form': UserCreationForm()})
 
     def post(self, request, *args, **kwargs):
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return HttpResponse('Registration is success!')
+        uploaded_form = UserCreationForm(request.POST)
+        
+        if try_to_register_user(form=uploaded_form):
+            username = uploaded_form.cleaned_data.get('username')
+            raw_password = uploaded_form.cleaned_data.get('password1')
+            try_to_login_user(username=username, raw_password=raw_password, request=request)
+            return HttpResponseRedirect('/')
         else:
-            return HttpResponse('Your form is invalid!')
-
+            return render(request, 'testing/signup.html', {'form': UserCreationForm()})
     
 
 class LogoutUserView(LoginRequiredMixin, View):
     login_url='/signin/'
 
     def get(self, request, *args, **kwargs):
-        context = {'username': request.user.username}
-        return render(request, 'testing/logout.html', context)
+        return render(request, 'testing/logout.html', {'username': request.user.username})
     
     def post(self, request, *args, **kwargs):
+        
         if request.POST['logout'] == "Yes":
-            logout(request)
-            return HttpResponseRedirect('/')
-        else:
-            return HttpResponseRedirect('/')
+            logout_user(request)
+        return HttpResponseRedirect('/')
 
 
 # doesn't work properly, probably will be deleted because it wasn't in TD.
