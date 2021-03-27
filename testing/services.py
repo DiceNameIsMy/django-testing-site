@@ -15,7 +15,7 @@ def _check_answer_is_correct(question, answers: list) -> bool:
 
 
 def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
-    """Returns question in progress. It is 1 by default"""
+    """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
     test = Test.objects.get(pk=test_pk)
     user = User.objects.get(username=username)
     tests_in_process = UserTest.objects.filter(user=user, test_in_process=test)
@@ -42,6 +42,7 @@ def get_question_context(test_pk: int, question_num_key: int) -> dict:
 
 
 def post_answer(test_pk: int, question_num_key: int, usertest, answers: list) -> None:
+    """Called when user sends his answer/answers to question. If his answers are correct adds +1 to score"""
     question = Question.objects.get(question_num=question_num_key, test=Test.objects.get(pk=test_pk))
 
     if _check_answer_is_correct(question=question, answers=answers):
@@ -49,7 +50,7 @@ def post_answer(test_pk: int, question_num_key: int, usertest, answers: list) ->
         usertest.save()
 
 
-def check_test_completed(test_pk: int, question_num_key: int, usertest):
+def check_test_completed(test_pk: int, question_num_key: int, usertest) -> bool:
 
     if Test.objects.get(pk=test_pk).questions_amount != question_num_key:
         usertest.question_in_process += 1
@@ -59,4 +60,47 @@ def check_test_completed(test_pk: int, question_num_key: int, usertest):
         return True
 
 
+def get_score_of_completed_test(t_pk: int, username: str) -> dict:
+    test = Test.objects.get(pk=t_pk)
+    user = User.objects.get(username=username)
+    user_test = UserTest.objects.get(user=user, test_in_process=test)
+    percentage = str(int(user_test.score) / int(test.questions_amount) * 100)
+    
+    score = {
+        'questions_amount': test.questions_amount,
+        'score': user_test.score,
+        'percentage': percentage,
+    }
+    return score
+
+
+def complete_test(t_pk: int, username: str) -> None:
+    """Deletes users UserTest object."""
+    user = User.objects.get(username=username)
+    test = Test.objects.get(pk=t_pk)
+
+    UserTest.objects.get(user=user, test_in_process=test).delete()
+
+
+def try_to_login_user(username: str, raw_password: str, request) -> bool:
+    user = authenticate(username=username, password=raw_password)
+
+    if user is not None:
+        login(request, user)
+        return True
+    else:
+        return False
+
+
+def try_to_register_user(form) -> bool:
+
+    if form.is_valid():
+        form.save()
+        return True
+    else:
+        return False
+
+
+def logout_user(request) -> None:
+    logout(request)
 
