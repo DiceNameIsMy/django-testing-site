@@ -96,6 +96,7 @@ def try_to_register_user(form) -> bool:
 
     if form.is_valid():
         form.save()
+        try_to_login_user(username=form.cleaned_data.get('username'), raw_password=form.cleaned_data.get('password1'))
         return True
     else:
         return False
