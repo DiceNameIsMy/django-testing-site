@@ -1,11 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User 
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render 
 from django.views import View
 from django.http import HttpResponseRedirect
 
-from .models import Test, Question, Answer, UserTest
 from .services import *
 
 
@@ -15,6 +13,7 @@ class MainPageView(View):
         return render(request, 'testing/main_page.html')
 
     def post(self, request, *args, **kwargs):
+        """transforms post value and redirects to there"""
         message = "".join(request.POST['send_to'].lower().split()) 
         return HttpResponseRedirect(f'/{message}/')
 
@@ -23,7 +22,7 @@ class MainPageView(View):
 class TestsView(View):
     
     def get(self, request, *args, **kwargs):
-        context = {'tests': Test.objects.order_by('-pub_date')}
+        context = {'tests': get_tests_by_pub_date()}
         return render(request, 'testing/tests.html', context)
 
 
@@ -32,8 +31,7 @@ class TestingPageView(LoginRequiredMixin, View):
     login_url='/signin/'
 
     def get(self, request, t_pk, *args, **kwargs):
-        test = Test.objects.get(pk=t_pk)
-        return render(request, 'testing/testing.html', {'test': test})
+        return render(request, 'testing/testing.html', {'test': get_test_by_pk(t_pk)})
 
     def post(self, request, t_pk, *args, **kwargs):
         question_num = get_quesiton_in_progress_or_create(test_pk=t_pk, username=request.user.username)
@@ -50,15 +48,13 @@ class TestingProcessView(LoginRequiredMixin, View):
         
     def post(self, request, t_pk, q_pk, *args, **kwargs): # it can be done better
         answers = sorted(request.POST.getlist('answers'))
-        test = Test.objects.get(pk=t_pk)
-        usertest = UserTest.objects.get(user=User.objects.get(username=request.user.username))
+        username = request.user.username
 
-        if not validate_answer(test=test, question_num=q_pk, answers=answers):
+        result = testing_process_post(t_pk, q_pk, username, answers)
+
+        if result == 'unvalid':
             return HttpResponseRedirect(str(q_pk))
-
-        post_answer(test=test, question_num_key=q_pk, usertest=usertest, answers=answers)
-
-        if check_test_completed(test_pk=t_pk, question_num_key=q_pk, usertest=usertest):
+        elif result == 'completed':
             return HttpResponseRedirect(f'/tests/{t_pk}/completed')   
         else:
             return HttpResponseRedirect(str(q_pk+1))
@@ -121,26 +117,4 @@ class LogoutUserView(LoginRequiredMixin, View):
         if request.POST['logout'] == "Yes":
             logout_user(request)
         return HttpResponseRedirect('/')
-
-
-# doesn't work properly, probably will be deleted because it wasn't in TD.
-class DeleteUserView(LoginRequiredMixin, View):
-    login_url='/signin/'
-
-    def get(self, request, u_pk, *args, **kwargs):
-        if request.user.username == User.objects.get(pk=u_pk).username:
-            context = {'username': request.user.username}
-            return render(request, 'testing/delete_user.html', context)
-        else:
-            context = {'access_denied': True}
-            return render(request, 'testing/delete_user.html', context)
-            
-    def post(self, request, u_pk, *args, **kwargs):
-        if request.POST['delete'] == "Yes":
-            user = User.objects.get(pk=u_pk)
-            user.delete()
-            return HttpResponseRedirect('/')
-        else:
-            return HttpResponseRedirect('/')
-
 
