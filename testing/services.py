@@ -18,14 +18,19 @@ def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
     """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
     test = Test.objects.get(pk=test_pk)
     user = User.objects.get(username=username)
-    tests_in_process = UserTest.objects.filter(user=user, test_in_process=test)
+    tests_in_process = UserTest.objects.filter(user=user)
 
     if not tests_in_process:
         user_test = UserTest(user=user, test_in_process=test)
         user_test.save()
         return 1
-    
-    return tests_in_process[0].question_in_process
+    elif tests_in_process[0].test_in_process == test:
+        return tests_in_process[0].question_in_process
+    else:
+        tests_in_process[0].delete()
+        user_test = UserTest(user=user, test_in_process=test)
+        user_test.save()
+        return 1
 
 
 def get_question_context(test_pk: int, question_num_key: int) -> dict:
@@ -41,13 +46,23 @@ def get_question_context(test_pk: int, question_num_key: int) -> dict:
     return context
 
 
-def post_answer(test_pk: int, question_num_key: int, usertest, answers: list) -> None:
+def post_answer(test , question_num_key: int, usertest, answers: list) -> None:
     """Called when user sends his answer/answers to question. If his answers are correct adds +1 to score"""
-    question = Question.objects.get(question_num=question_num_key, test=Test.objects.get(pk=test_pk))
+    question = Question.objects.get(question_num=question_num_key, test=test)
 
     if _check_answer_is_correct(question=question, answers=answers):
         usertest.score += 1
         usertest.save()
+
+
+def validate_answer(test, question_num, answers):
+    """Checks if user didn't select all answers or none of them"""
+    question = Question.objects.get(test=test, question_num=question_num)
+    correct_answers_len = len(Answer.objects.filter(question=question)) 
+    if len(answers) == correct_answers_len or len(answers) == 0:
+        return False
+    else: 
+        return True
 
 
 def check_test_completed(test_pk: int, question_num_key: int, usertest) -> bool:
