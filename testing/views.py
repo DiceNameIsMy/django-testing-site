@@ -102,9 +102,6 @@ class RegisterUserView(View):
         uploaded_form = UserCreationForm(request.POST)
         
         if try_to_register_user(form=uploaded_form):
-            username = uploaded_form.cleaned_data.get('username')
-            raw_password = uploaded_form.cleaned_data.get('password1')
-            try_to_login_user(username=username, raw_password=raw_password, request=request)
             return HttpResponseRedirect('/')
         else:
             return render(request, 'testing/signup.html', {'form': UserCreationForm()})
