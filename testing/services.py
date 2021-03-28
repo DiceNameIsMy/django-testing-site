@@ -14,6 +14,14 @@ def _check_answer_is_correct(question, answers: list) -> bool:
         return False
 
 
+def get_tests_by_pub_date():
+    return Test.objects.order_by('-pub_date')
+
+
+def get_test_by_pk(t_pk):
+    return Test.objects.get(pk=t_pk)
+
+
 def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
     """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
     test = Test.objects.get(pk=test_pk)
@@ -46,18 +54,16 @@ def get_question_context(test_pk: int, question_num_key: int) -> dict:
     return context
 
 
-def post_answer(test , question_num_key: int, usertest, answers: list) -> None:
+def _post_answer(question, usertest, answers: list) -> None:
     """Called when user sends his answer/answers to question. If his answers are correct adds +1 to score"""
-    question = Question.objects.get(question_num=question_num_key, test=test)
-
+    
     if _check_answer_is_correct(question=question, answers=answers):
         usertest.score += 1
         usertest.save()
 
 
-def validate_answer(test, question_num, answers):
+def _is_answer_valid(test, question, answers: list) -> bool:
     """Checks if user didn't select all answers or none of them"""
-    question = Question.objects.get(test=test, question_num=question_num)
     correct_answers_len = len(Answer.objects.filter(question=question)) 
     if len(answers) == correct_answers_len or len(answers) == 0:
         return False
@@ -65,14 +71,31 @@ def validate_answer(test, question_num, answers):
         return True
 
 
-def check_test_completed(test_pk: int, question_num_key: int, usertest) -> bool:
+def _check_test_completed(test, question_num_key: int, usertest) -> bool:
 
-    if Test.objects.get(pk=test_pk).questions_amount != question_num_key:
+    if test.questions_amount != question_num_key:
         usertest.question_in_process += 1
         usertest.save()
         return False
     else:
         return True
+
+
+def testing_process_post(t_pk, q_pk, username, answers) -> str:
+    """called when TestingProcessView gets POST"""
+    test = Test.objects.get(pk=t_pk)
+    question = Question.objects.get(test=test, question_num=q_pk)
+
+    if not _is_answer_valid(test, question, answers):
+        return 'unvalid'
+
+    usertest = UserTest.objects.get(user=User.objects.get(username=username))
+    _post_answer(question, usertest)
+
+    if _check_test_completed(test, q_pk, usertest=usertest):
+        return 'completed'
+    else:
+        return 'next'
 
 
 def get_score_of_completed_test(t_pk: int, username: str) -> dict:
