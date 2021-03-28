@@ -1,10 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render 
 from django.views import View
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 
 from .models import Test, Question, Answer, UserTest
 from .services import *
@@ -51,14 +50,18 @@ class TestingProcessView(LoginRequiredMixin, View):
         
     def post(self, request, t_pk, q_pk, *args, **kwargs): # it can be done better
         answers = sorted(request.POST.getlist('answers'))
+        test = Test.objects.get(pk=t_pk)
         usertest = UserTest.objects.get(user=User.objects.get(username=request.user.username))
-        
-        post_answer(test_pk=t_pk, question_num_key=q_pk, usertest=usertest, answers=answers)
+
+        if not validate_answer(test=test, question_num=q_pk, answers=answers):
+            return HttpResponseRedirect(str(q_pk))
+
+        post_answer(test=test, question_num_key=q_pk, usertest=usertest, answers=answers)
 
         if check_test_completed(test_pk=t_pk, question_num_key=q_pk, usertest=usertest):
             return HttpResponseRedirect(f'/tests/{t_pk}/completed')   
         else:
-            return HttpResponseRedirect(f'{q_pk + 1}')
+            return HttpResponseRedirect(str(q_pk+1))
 
 
 
