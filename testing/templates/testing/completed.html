@@ -7,4 +7,9 @@
 {% block body %}
 <p>{{ questions_amount }} / {{ score }}</p>
 <p>{{ percentage }}%</p>
+
+<form action="/groups/">
+    <input type="submit" value="Go back" />
+</form>
+
 {% endblock %}
