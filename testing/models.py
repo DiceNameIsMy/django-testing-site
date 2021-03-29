@@ -3,9 +3,18 @@ from django.utils.timezone import now
 from django.db import models
 
 
+class TestGroup(models.Model):
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class Test(models.Model):
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=200)
+    group = models.ForeignKey(TestGroup, on_delete=models.SET_NULL, null=True)
     pub_date = models.DateField(default=now)
     questions_amount = models.SmallIntegerField(default=0)
 
