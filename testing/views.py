@@ -19,11 +19,17 @@ class MainPageView(View):
 
 
 
-class TestsView(View):
-    
+class GroupOfTestsView(View):
+
     def get(self, request, *args, **kwargs):
-        context = {'tests': get_tests_by_pub_date()}
-        return render(request, 'testing/tests.html', context)
+        return render(request, 'testing/groups.html', {'groups': get_groups_of_tests})
+    
+
+class GroupTestsView(View):
+    
+    def get(self, request, group_slug, *args, **kwargs):
+        context = {'tests': get_group_of_tests_by_pub_date(group=group_slug)}
+        return render(request, 'testing/group_tests.html', context)
 
 
 
@@ -46,7 +52,7 @@ class TestingProcessView(LoginRequiredMixin, View):
         context = get_question_context(test_pk=t_pk, question_num_key=q_pk)
         return render(request, 'testing/testing_process.html', context)
         
-    def post(self, request, t_pk, q_pk, *args, **kwargs): # it can be done better
+    def post(self, request, group_slug, t_pk, q_pk, *args, **kwargs): # it can be done better
         answers = sorted(request.POST.getlist('answers'))
         username = request.user.username
 
@@ -55,7 +61,7 @@ class TestingProcessView(LoginRequiredMixin, View):
         if result == 'unvalid':
             return HttpResponseRedirect(str(q_pk))
         elif result == 'completed':
-            return HttpResponseRedirect(f'/tests/{t_pk}/completed')   
+            return HttpResponseRedirect(f'/tests/{group_slug}/{t_pk}/completed')   
         else:
             return HttpResponseRedirect(str(q_pk+1))
 
