@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, authenticate
 
-from .models import Test, Question, Answer, UserTest
+from .models import TestGroup, Test, Question, Answer, UserTest
 
 
 def _check_answer_is_correct(question, answers: list) -> bool:
@@ -14,8 +14,13 @@ def _check_answer_is_correct(question, answers: list) -> bool:
         return False
 
 
-def get_tests_by_pub_date():
-    return Test.objects.order_by('-pub_date')
+def get_groups_of_tests():
+    return TestGroup.objects.all()
+
+
+def get_group_of_tests_by_pub_date(group):
+    group = TestGroup.objects.get(name=group)
+    return Test.objects.filter(group=group).order_by('-pub_date')
 
 
 def get_test_by_pk(t_pk):
@@ -90,7 +95,7 @@ def testing_process_post(t_pk, q_pk, username, answers) -> str:
         return 'unvalid'
 
     usertest = UserTest.objects.get(user=User.objects.get(username=username))
-    _post_answer(question, usertest)
+    _post_answer(question, usertest, answers)
 
     if _check_test_completed(test, q_pk, usertest=usertest):
         return 'completed'
