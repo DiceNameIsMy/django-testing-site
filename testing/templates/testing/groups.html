@@ -1,0 +1,21 @@
+{% extends 'testing/basic.html'%}
+
+{% block head %}
+<title>Tests</title>
+{% endblock %}
+
+{% block body %}
+<h2>Tests</h2>
+<section>
+        <div>
+        {% for group in groups %}
+            <a href="/tests/{{ group.name }}">{{ group.name }}</a>
+            <p>{{ group.description }}</p>
+        {% endfor %}
+        </div>
+</section>
+
+<form action="/">
+    <input type="submit" value="Go back" />
+</form>
+{% endblock %}
