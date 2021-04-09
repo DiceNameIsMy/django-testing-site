@@ -1,6 +1,7 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
 
 <head>
     <meta charset="UTF-8">
@@ -11,7 +12,15 @@
 </head>
 
 <body>
+    <nav>
+        {% block nav %}{% endblock %}
+    </nav>
+    
     {% block body %}{% endblock %}
+
+    <footer>
+
+    </footer>
 </body>
 
 </html>
