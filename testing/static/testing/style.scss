@@ -2,10 +2,11 @@
 
 :root {
     --primary-blue: #18b3ae;
+    --primary-gray: #f2f2f2;
 }
 
 body {
-    background: #f2f2f2;
+    background: var(--primary-gray);
     margin: 0;
     font-family: "Poppins";
 }
@@ -15,14 +16,48 @@ nav {
     padding: 1em;
 }
 
-    .logo {
+    .container {
+        padding-left: 6em;
+    }
+
+    .logo-text {
         text-decoration: none;
         font-weight: bold;
         color: black;
-        font-size: 1.2em;
+        font-size: 2.6em;
 
         span {
             color: var(--primary-blue);
         }
     }
+    
+    li.start-now-btn {
+        color: var(--primary-blue);
+        border: 3px solid var(--primary-blue);
+        border-radius: 3px;
+
+        &:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+    }
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding: 0em 6em;
+    align-items: center;
+}
+
+    .logo {
+        width: 30%;
+    }
+
+.container {
+    background: white;
+}
 
