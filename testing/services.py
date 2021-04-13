@@ -27,6 +27,10 @@ def get_test_by_pk(t_pk):
     return Test.objects.get(pk=t_pk)
 
 
+def get_tests_by_user(username): # return Queryset object
+    return Test.objects.filter(creator=User.objects.get(username=username))
+
+
 def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
     """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
     test = Test.objects.get(pk=test_pk)
