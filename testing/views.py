@@ -124,3 +124,10 @@ class LogoutUserView(LoginRequiredMixin, View):
             logout_user(request)
         return HttpResponseRedirect('/')
 
+
+class ManageTestsView(LoginRequiredMixin, View):
+    login_url='/signin/'
+
+    def get(self, request, *args, **kwargs):
+        user_created_tests = [i for i in get_tests_by_user(request.user.username)]
+        return render(request, 'testing/manage_tests.html', context={'tests': user_created_tests})
