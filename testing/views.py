@@ -125,9 +125,42 @@ class LogoutUserView(LoginRequiredMixin, View):
         return HttpResponseRedirect('/')
 
 
+class UserPageView(LoginRequiredMixin, View):
+    login_url='/signin/'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            "username": request.user.username,
+
+        }
+        return render(request, 'user_page.html', context=context)
+
+
+
 class ManageTestsView(LoginRequiredMixin, View):
     login_url='/signin/'
 
     def get(self, request, *args, **kwargs):
         user_created_tests = [i for i in get_tests_by_user(request.user.username)]
         return render(request, 'testing/manage_tests.html', context={'tests': user_created_tests})
+
+
+class TestDetailView(LoginRequiredMixin, View):
+    login_url='/signin/'
+
+    def get(self, request, t_pk, *args, **kwargs):
+        if access_to_test(request.user.username, t_pk):
+            test = get_test_by_pk(t_pk)
+            questions = get_questions_by_test_pk(t_pk)
+            questions_w_answers = [(i, get_answers_by_question(i)) for i in questions]
+
+            context = {
+                'name': test.name,
+                'description': test.description,
+                'group': test.group,
+                'pub_date': test.pub_date,
+                'questions_w_answers': questions_w_answers,
+            }
+            return render(request, 'testing/test_detail.html', context=context)
+        else:
+            return render(request, 'testing/access_denied.html')
