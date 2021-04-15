@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% load static %}
 
 <!DOCTYPE html>
@@ -13,13 +14,14 @@
 
 <body>
     <nav>
-        {% block nav %}{% endblock %}
+        <a class="logo-text" href="/">Test<span>Up</span></a>
+        {% block nav-items %}{% endblock %}
     </nav>
     
     {% block body %}{% endblock %}
 
     <footer>
-        <div class="container"></div>
+        
     </footer>
 </body>
 

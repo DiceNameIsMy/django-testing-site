@@ -7,18 +7,16 @@
 
 body {
     background: var(--primary-gray);
-    margin: 0;
+    margin: 0em;
     font-family: "Poppins";
 }
 
 nav {
     background: white;
-    padding: 1em;
+    align-self: center;
+    margin: 0 auto;
+    padding: 1em 8em;
 }
-
-    .container {
-        padding-left: 6em;
-    }
 
     .logo-text {
         text-decoration: none;
@@ -31,10 +29,15 @@ nav {
         }
     }
     
+    li {
+        display: inline;
+        padding: .4em;
+    }
+
     li.start-now-btn {
         color: var(--primary-blue);
         border: 3px solid var(--primary-blue);
-        border-radius: 3px;
+        border-radius: 15px;
 
         &:hover {
             background: var(--primary-blue);
@@ -42,10 +45,23 @@ nav {
         }
     }
 
+    .right-nav {
+        padding: 1.2em;
+        padding-right: 0em;
+        float: right;
+    }
+
+
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+a {
+    font-size: 1.2em;
+    text-decoration: none;
+    color: black;
 }
 
 main {
@@ -54,10 +70,30 @@ main {
 }
 
     .logo {
-        width: 30%;
+        width: 80%;
     }
 
-.container {
-    background: white;
+    .container {
+        background: white;
+        margin: 1.4em;
+        padding: 1em;
+        display: flex;
+        justify-content: space-around;
+        height: 30em;  
+    }
+
+    .items-block {
+        margin: 1.4em;
+        text-align: center;
+        align-self: center;
+    }
+
+footer {
+    text-align: center;
+    height: 16em;
+    bottom: 0em;
+    left: 0;
+    right: 0;
+    background-color: white;
 }
 

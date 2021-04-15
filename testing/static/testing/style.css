@@ -6,17 +6,17 @@
 
 body {
   background: var(--primary-gray);
-  margin: 0;
+  margin: 0em;
   font-family: "Poppins";
 }
 
 nav {
   background: white;
-  padding: 1em;
-}
-
-.container {
-  padding-left: 6em;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  margin: 0 auto;
+  padding: 1em 8em;
 }
 
 .logo-text {
@@ -30,10 +30,15 @@ nav {
   color: var(--primary-blue);
 }
 
+li {
+  display: inline;
+  padding: .4em;
+}
+
 li.start-now-btn {
   color: var(--primary-blue);
   border: 3px solid var(--primary-blue);
-  border-radius: 3px;
+  border-radius: 15px;
 }
 
 li.start-now-btn:hover {
@@ -41,10 +46,22 @@ li.start-now-btn:hover {
   color: white;
 }
 
+.right-nav {
+  padding: 1.2em;
+  padding-right: 0em;
+  float: right;
+}
+
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+a {
+  font-size: 1.2em;
+  text-decoration: none;
+  color: black;
 }
 
 main {
@@ -55,10 +72,35 @@ main {
 }
 
 .logo {
-  width: 30%;
+  width: 80%;
 }
 
 .container {
   background: white;
+  margin: 1.4em;
+  padding: 1em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  height: 30em;
+}
+
+.items-block {
+  margin: 1.4em;
+  text-align: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+
+footer {
+  text-align: center;
+  height: 16em;
+  bottom: 0em;
+  left: 0;
+  right: 0;
+  background-color: white;
 }
 /*# sourceMappingURL=style.css.map */
