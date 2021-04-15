@@ -31,6 +31,12 @@ def get_tests_by_user(username): # return Queryset object
     return Test.objects.filter(creator=User.objects.get(username=username))
 
 
+def get_questions_by_test_pk(test_pk) -> list:
+    test = Test.objects.get(pk=test_pk)
+    questions = Question.objects.filter(test=test).order_by('question_num')
+    return [i for i in questions]
+
+
 def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
     """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
     test = Test.objects.get(pk=test_pk)
@@ -48,6 +54,11 @@ def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
         user_test = UserTest(user=user, test_in_process=test)
         user_test.save()
         return 1
+
+
+def get_answers_by_question(question):
+    answers = Answer.objects.filter(question=question)
+    return [i for i in answers]
 
 
 def get_question_context(test_pk: int, question_num_key: int) -> dict:
@@ -152,3 +163,11 @@ def try_to_register_user(form) -> bool:
 def logout_user(request) -> None:
     logout(request)
 
+
+def access_to_test(username, test_pk) -> bool:
+    test = Test.objects.get(pk=test_pk)
+
+    if test.creator.username == username:
+        return True
+    else:
+        return False
