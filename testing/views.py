@@ -12,22 +12,18 @@ class MainPageView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'testing/main_page.html')
 
-    def post(self, request, *args, **kwargs):
-        """transforms post value and redirects to there"""
-        message = "".join(request.POST['send_to'].lower().split()) 
-        return HttpResponseRedirect(f'/{message}/')
 
-
-
-class GroupOfTestsView(View):
+class GroupsOfTestsView(View): 
 
     def get(self, request, *args, **kwargs):
+        """ sends all groups of tests """
         return render(request, 'testing/groups.html', {'groups': get_groups_of_tests})
     
 
 class GroupTestsView(View):
     
     def get(self, request, group_slug, *args, **kwargs):
+        """ returns all tests of group """
         context = {'tests': get_group_of_tests_by_pub_date(group=group_slug)}
         return render(request, 'testing/group_tests.html', context)
 
@@ -49,7 +45,8 @@ class TestingProcessView(LoginRequiredMixin, View):
     login_url='/signin/'
 
     def get(self, request, t_pk, q_pk, *args, **kwargs):
-        context = get_question_context(test_pk=t_pk, question_num_key=q_pk)
+        test = get_test_by_pk(t_pk)
+        context = get_question_context(test_obj=test, question_num_key=q_pk)
         return render(request, 'testing/testing_process.html', context)
         
     def post(self, request, group_slug, t_pk, q_pk, *args, **kwargs): # it can be done better
@@ -72,8 +69,7 @@ class TestCompletedView(LoginRequiredMixin, View):
 
     def get(self, request, t_pk, *args, **kwargs):
         username = request.user.username
-        score = get_score_of_completed_test(t_pk, username)
-        complete_test(t_pk, username)
+        complete_test = end_test(t_pk, username)
 
         return render(request, 'testing/completed.html', score)
 
@@ -88,9 +84,9 @@ class LoginUserView(View):
         return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
 
     def post(self, request, *args, **kwargs):
-        attempt = try_to_login_user(username=request.POST['username'], raw_password=request.POST['password'], request=request)
+        attempt_to_login = try_to_login_user(username=request.POST['username'], raw_password=request.POST['password'], request=request)
 
-        if attempt:
+        if attempt_to_login:
             return HttpResponseRedirect('/')
         else:
             context = {'is_auth': request.user.is_authenticated, 'message': 'Please enter the correct username and password.'}
@@ -131,7 +127,6 @@ class UserPageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = {
             "username": request.user.username,
-
         }
         return render(request, 'user_page.html', context=context)
 
@@ -141,18 +136,19 @@ class ManageTestsView(LoginRequiredMixin, View):
     login_url='/signin/'
 
     def get(self, request, *args, **kwargs):
-        user_created_tests = [i for i in get_tests_by_user(request.user.username)]
+        user_created_tests = get_tests_by_user(request.user.username)
         return render(request, 'testing/manage_tests.html', context={'tests': user_created_tests})
 
 
-class TestDetailView(LoginRequiredMixin, View):
+class TestDetailView(LoginRequiredMixin, View): # raw view
     login_url='/signin/'
 
     def get(self, request, t_pk, *args, **kwargs):
-        if access_to_test(request.user.username, t_pk):
-            test = get_test_by_pk(t_pk)
-            questions = get_questions_by_test_pk(t_pk)
-            questions_w_answers = [(i, get_answers_by_question(i)) for i in questions]
+        test = get_test_by_pk(t_pk)
+
+        if access_to_test(request.user.username, test):
+            questions = get_questions(test)
+            questions_w_answers = [(i, get_answers(i)) for i in questions]
 
             context = {
                 'name': test.name,

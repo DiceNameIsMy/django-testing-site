@@ -27,18 +27,17 @@ def get_test_by_pk(t_pk):
     return Test.objects.get(pk=t_pk)
 
 
-def get_tests_by_user(username): # return Queryset object
-    return Test.objects.filter(creator=User.objects.get(username=username))
+def get_tests_by_user(username: str) -> list:
+    return [ i for i in Test.objects.filter(creator=User.objects.get(username=username))]
 
 
-def get_questions_by_test_pk(test_pk) -> list:
-    test = Test.objects.get(pk=test_pk)
+def get_questions(test) -> list:
     questions = Question.objects.filter(test=test).order_by('question_num')
     return [i for i in questions]
 
 
 def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
-    """Returns question in progress. If there is none in progress, creates one. It is 1 by default"""
+    """ Returns question in progress. If there is none in progress, creates one """
     test = Test.objects.get(pk=test_pk)
     user = User.objects.get(username=username)
     tests_in_process = UserTest.objects.filter(user=user)
@@ -56,17 +55,16 @@ def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
         return 1
 
 
-def get_answers_by_question(question):
+def get_answers(question) -> list:
     answers = Answer.objects.filter(question=question)
     return [i for i in answers]
 
 
-def get_question_context(test_pk: int, question_num_key: int) -> dict:
+def get_question_context(test_obj, question_num_key: int) -> dict:
     """Returns test and quesiton with its answers"""
-    test = Test.objects.get(pk=test_pk) 
-    question = Question.objects.get(question_num=question_num_key, test=test)
+    question = Question.objects.get(question_num=question_num_key, test=test_obj)
     context = {
-        'test_name': test.name,
+        'test_name': test_obj.name,
         'question': question.text,
         'answers': Answer.objects.filter(question=question),
         }
@@ -82,7 +80,7 @@ def _post_answer(question, usertest, answers: list) -> None:
         usertest.save()
 
 
-def _is_answer_valid(test, question, answers: list) -> bool:
+def _is_answer_valid(question, answers: list) -> bool:
     """Checks if user didn't select all answers or none of them"""
     correct_answers_len = len(Answer.objects.filter(question=question)) 
     if len(answers) == correct_answers_len or len(answers) == 0:
@@ -104,7 +102,7 @@ def _check_test_completed(test, question_num_key: int, usertest) -> bool:
 def testing_process_post(t_pk, q_pk, username, answers) -> str:
     """called when TestingProcessView gets POST"""
     test = Test.objects.get(pk=t_pk)
-    question = Question.objects.get(test=test, question_num=q_pk)
+    question = Question.objects.get(question_num=q_pk)
 
     if not _is_answer_valid(test, question, answers):
         return 'unvalid'
@@ -118,7 +116,8 @@ def testing_process_post(t_pk, q_pk, username, answers) -> str:
         return 'next'
 
 
-def get_score_of_completed_test(t_pk: int, username: str) -> dict:
+def end_test(t_pk: int, username: str) -> dict:
+    """when test completed delete UserTest object and get score"""
     test = Test.objects.get(pk=t_pk)
     user = User.objects.get(username=username)
     user_test = UserTest.objects.get(user=user, test_in_process=test)
@@ -129,15 +128,10 @@ def get_score_of_completed_test(t_pk: int, username: str) -> dict:
         'score': user_test.score,
         'percentage': percentage,
     }
-    return score
-
-
-def complete_test(t_pk: int, username: str) -> None:
-    """Deletes users UserTest object."""
-    user = User.objects.get(username=username)
-    test = Test.objects.get(pk=t_pk)
 
     UserTest.objects.get(user=user, test_in_process=test).delete()
+
+    return score
 
 
 def try_to_login_user(username: str, raw_password: str, request) -> bool:
@@ -160,12 +154,11 @@ def try_to_register_user(form) -> bool:
         return False
 
 
-def logout_user(request) -> None:
+def logout_user(request):
     logout(request)
 
 
-def access_to_test(username, test_pk) -> bool:
-    test = Test.objects.get(pk=test_pk)
+def access_to_test(username, test) -> bool:
 
     if test.creator.username == username:
         return True
