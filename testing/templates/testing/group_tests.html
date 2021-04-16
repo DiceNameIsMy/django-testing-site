@@ -5,20 +5,20 @@
 {% endblock %}
 
 {% block body %}
+<article>
 <h2>Tests</h2>
-<section>
     {% if tests|length < 1 %}
-        <p>There is no tests avaliable.</p>
+        <h2>There is no tests avaliable.</h2>
     {% else %}
-        <div>
         {% for test in tests %}
+        <section>
             <a href="{{ test.pk }}">{{ test.name }}</a>
             <p>{{ test.description }}</p>
             <p>{{ test.pub_date }}</p>
-        {% endfor %}
-        </div>
+        </section>
+        {% endfor %} 
     {% endif %}
-</section>
+</article>
 
 <form action="/groups">
     <input type="submit" value="Go back" />

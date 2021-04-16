@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block body %}
-<h2>Tests</h2>
-<section>
-        <div>
-        {% for group in groups %}
-            <a href="/tests/{{ group.name }}">{{ group.name }}</a>
-            <p>{{ group.description }}</p>
-        {% endfor %}
-        </div>
-</section>
+<article>
+<h2>Test groups</h2>
+    {% for group in groups %}
+        <section>
+        <a href="/tests/{{ group.name }}">{{ group.name }}</a>
+        <p class="description">{{ group.description }}</p>
+        </section>
+    {% endfor %}
+</article>
 
 <form action="/">
     <input type="submit" value="Go back" />

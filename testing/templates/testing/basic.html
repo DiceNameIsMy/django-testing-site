@@ -13,12 +13,16 @@
 </head>
 
 <body>
-    <nav>
+    <header>
         <a class="logo-text" href="/">Test<span>Up</span></a>
+        <nav>
         {% block nav-items %}{% endblock %}
-    </nav>
+        </nav>
+    </header>
     
+    <main>
     {% block body %}{% endblock %}
+    </main>
 
     <footer>
         

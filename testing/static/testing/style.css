@@ -1,22 +1,28 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 :root {
   --primary-blue: #18b3ae;
-  --primary-gray: #f2f2f2;
 }
 
 body {
-  background: var(--primary-gray);
+  background: #f2f2f2;
   margin: 0em;
   font-family: "Poppins";
 }
 
-nav {
+header {
   background: white;
   -ms-flex-item-align: center;
       -ms-grid-row-align: center;
       align-self: center;
   margin: 0 auto;
-  padding: 1em 8em;
+  padding: 1em 11%;
+}
+
+nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  float: right;
 }
 
 .logo-text {
@@ -65,10 +71,28 @@ a {
 }
 
 main {
-  padding: 0em 6em;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  background: white;
+  margin: 1.2em;
+  margin-left: 10%;
+  margin-right: 10%;
+  padding: 1em;
+  height: 30em;
+}
+
+article {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+h2 {
+  margin: 0em;
+}
+
+p {
+  margin-top: 0em;
 }
 
 .logo {
@@ -76,15 +100,11 @@ main {
 }
 
 .container {
-  background: white;
-  margin: 1.4em;
-  padding: 1em;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: distribute;
       justify-content: space-around;
-  height: 30em;
 }
 
 .items-block {
