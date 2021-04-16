@@ -69,7 +69,7 @@ class TestCompletedView(LoginRequiredMixin, View):
 
     def get(self, request, t_pk, *args, **kwargs):
         username = request.user.username
-        complete_test = end_test(t_pk, username)
+        score = end_test(t_pk, username)
 
         return render(request, 'testing/completed.html', score)
 
