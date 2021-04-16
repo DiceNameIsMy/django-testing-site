@@ -102,9 +102,9 @@ def _check_test_completed(test, question_num_key: int, usertest) -> bool:
 def testing_process_post(t_pk, q_pk, username, answers) -> str:
     """called when TestingProcessView gets POST"""
     test = Test.objects.get(pk=t_pk)
-    question = Question.objects.get(question_num=q_pk)
+    question = Question.objects.get(test=test, question_num=q_pk)
 
-    if not _is_answer_valid(test, question, answers):
+    if not _is_answer_valid(question, answers):
         return 'unvalid'
 
     usertest = UserTest.objects.get(user=User.objects.get(username=username))
@@ -144,11 +144,14 @@ def try_to_login_user(username: str, raw_password: str, request) -> bool:
         return False
 
 
-def try_to_register_user(form) -> bool:
+def try_to_register_user(request, form) -> bool:
 
     if form.is_valid():
         form.save()
-        try_to_login_user(username=form.cleaned_data.get('username'), raw_password=form.cleaned_data.get('password1'))
+        try_to_login_user(
+            username=form.cleaned_data.get('username'), 
+            raw_password=form.cleaned_data.get('password1'), 
+            request=request)
         return True
     else:
         return False

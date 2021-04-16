@@ -69,7 +69,7 @@ class TestCompletedView(LoginRequiredMixin, View):
 
     def get(self, request, t_pk, *args, **kwargs):
         username = request.user.username
-        complete_test = end_test(t_pk, username)
+        score = end_test(t_pk, username)
 
         return render(request, 'testing/completed.html', score)
 
@@ -102,7 +102,7 @@ class RegisterUserView(View):
     def post(self, request, *args, **kwargs):
         uploaded_form = UserCreationForm(request.POST)
         
-        if try_to_register_user(form=uploaded_form):
+        if try_to_register_user(request=request, form=uploaded_form):
             return HttpResponseRedirect('/')
         else:
             return render(request, 'testing/signup.html', {'form': UserCreationForm()})
