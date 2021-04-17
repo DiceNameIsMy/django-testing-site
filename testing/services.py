@@ -57,7 +57,7 @@ def get_quesiton_in_progress_or_create(test_pk: int, username: str) -> int:
 
 def get_answers(question) -> list:
     answers = Answer.objects.filter(question=question)
-    return [i for i in answers]
+    return [a for a in answers]
 
 
 def get_question_context(test_obj, question_num_key: int) -> dict:
