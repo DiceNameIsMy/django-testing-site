@@ -129,9 +129,9 @@ class UserPageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = {
             "username": request.user.username,
+            "user_created_tests": get_tests_by_user(request.user.username),
         }
-        return render(request, 'user_page.html', context=context)
-
+        return render(request, 'testing/user_page.html', context=context)
 
 
 class ManageTestsView(LoginRequiredMixin, View):
@@ -139,7 +139,7 @@ class ManageTestsView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         user_created_tests = get_tests_by_user(request.user.username)
-        return render(request, 'testing/manage_tests.html', context={'tests': user_created_tests})
+        return render(request, 'testing/manage_tests.html', context={'user_created_tests': user_created_tests})
 
 
 class TestDetailView(LoginRequiredMixin, View): # raw view
@@ -150,7 +150,7 @@ class TestDetailView(LoginRequiredMixin, View): # raw view
 
         if access_to_test(request.user.username, test):
             questions = get_questions(test)
-            questions_w_answers = [(i, get_answers(i)) for i in questions]
+            questions_w_answers = [(q, get_answers(q)) for q in questions]
 
             context = {
                 'name': test.name,
@@ -162,3 +162,7 @@ class TestDetailView(LoginRequiredMixin, View): # raw view
             return render(request, 'testing/test_detail.html', context=context)
         else:
             return render(request, 'testing/access_denied.html')
+    
+    def put(self, request, t_pk, *args, **kwargs):
+        print(request, request.PUT['question'])
+        print(request.PUT['answer'])
