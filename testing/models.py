@@ -17,7 +17,7 @@ class Test(models.Model):
     group = models.ForeignKey(TestGroup, on_delete=models.SET_NULL, null=True)
     pub_date = models.DateField(default=now)
     questions_amount = models.SmallIntegerField(default=0)
-    creator = models.ForeignKey(User, on_delete=models.PROTECT, default=User.objects.get(pk=1))
+    creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return f'name:{self.name}, creator:{self.creator}'
