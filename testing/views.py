@@ -13,14 +13,16 @@ class MainPageView(View):
         return render(request, 'testing/main_page.html')
 
 
-class GroupsOfTestsView(View): 
+class GroupsOfTestsView(LoginRequiredMixin, View): 
+    login_url='/signin/'
 
     def get(self, request, *args, **kwargs):
         """ sends all groups of tests """
         return render(request, 'testing/groups.html', {'groups': get_groups_of_tests})
     
 
-class GroupTestsView(View):
+class GroupTestsView(LoginRequiredMixin, View):
+    login_url='/signin/'
     
     def get(self, request, group_slug, *args, **kwargs):
         """ returns all tests of group """
