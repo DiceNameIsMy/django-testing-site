@@ -39,13 +39,11 @@ header {
     }
 
     li.start-now-btn {
-        color: var(--primary-blue);
         border: 3px solid var(--primary-blue);
         border-radius: 15px;
 
         &:hover {
-            background: var(--primary-blue);
-            color: white;
+            background-color: var(--primary-blue);
         }
     }
 
@@ -78,16 +76,39 @@ main {
 }
 
 article {
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+section.wrapper {
+    margin-bottom: .3em;
+    padding: .3em;
+
+    &:hover {
+        background-color: #f2f2f2;
+    }
+}
+
+span.description {
+    font-size: small;
+}
+
+span.date {
+    font-size: small;
+    color: #555;
 }
 
 h2 {
     margin: 0em;
 }
 
+h3 {
+    margin: 0;
+    font-weight: normal;
+}
+
 p {
-    margin-top: 0em;
+    margin: 0em;
 }
 
 .logo {

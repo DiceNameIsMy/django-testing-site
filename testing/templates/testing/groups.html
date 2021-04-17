@@ -6,9 +6,9 @@
 
 {% block body %}
 <article>
-<h2>Test groups</h2>
+<h2>Test groups</h2><br>
     {% for group in groups %}
-        <section>
+        <section class="wrapper">
         <a href="/tests/{{ group.name }}">{{ group.name }}</a>
         <p class="description">{{ group.description }}</p>
         </section>

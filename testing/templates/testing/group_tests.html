@@ -6,15 +6,15 @@
 
 {% block body %}
 <article>
-<h2>Tests</h2>
+<h2>Tests</h2><br>
     {% if tests|length < 1 %}
-        <h2>There is no tests avaliable.</h2>
+        <h3>There is no tests avaliable.</h3><br>
     {% else %}
         {% for test in tests %}
-        <section>
-            <a href="{{ test.pk }}">{{ test.name }}</a>
-            <p>{{ test.description }}</p>
-            <p>{{ test.pub_date }}</p>
+        <section class="wrapper">
+            <a href="{{ test.pk }}">{{ test.name }}</a><br>
+            <span class="description">{{ test.description }}</span><br>
+            <span class="date">{{ test.pub_date }}</span>
         </section>
         {% endfor %} 
     {% endif %}

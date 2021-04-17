@@ -7,7 +7,7 @@
 {% block body %}
 <h2>{{ test.name }}</h2>
 <h3>{{ test.description }}</h3>
-<p>{{ test.pub_date }}</p>
+<span class="date">{{ test.pub_date }}</span>
 <form method="POST">
     {% csrf_token %}
     <input type="submit" name="start" value="Start">

@@ -13,7 +13,7 @@
     {% for answer in answers %}
     <p><input type="checkbox" name="answers" value="{{answer.id}}">   {{ answer.text }}</p>
     {% endfor %}
-    <br><input type="submit" value="Next">
+    <input type="submit" value="Next">
 </form>
 
 {% endblock %}
