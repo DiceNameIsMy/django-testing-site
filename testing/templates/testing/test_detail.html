@@ -1,0 +1,41 @@
+{% extends 'testing/basic.html'%}
+
+{% block head %}
+<title>{{name}}</title>
+{% endblock %}
+{% block body %}
+
+<div class="test_detail">
+    <h2>Name:<br>{{ name }}</h2>
+    <h3>Description:<br>{{ description }}</h3>
+    <h3>Group name: {{ group }}</h3>
+    <span class="date">{{ pub_date }}</span>
+</div>
+    
+<div class="test_questions">
+
+    {% for couple in questions_w_answers %}
+        <form action="POST">
+            {% csrf_token %}
+        <label for="question">Question:</label><br>
+        <textarea id="question" name="question" maxlength="200" rows="3" cols="80">{{ couple.0 }}</textarea>
+        
+        <div class="answers">
+        {% for answer in couple.1 %}
+            <input type="text" value="{{ answer }}" name="answer" maxlength="100" size="30">
+
+            {% if answer.is_correct %}
+                <input type="checkbox" name="is_cor" checked>
+            {% else %}
+                <input type="checkbox" name="is_cor">
+            {% endif %}
+        <br>
+        {% endfor %}
+        </div>
+        
+        <input type="submit" value="Save">
+        </form>
+    {% endfor %}
+    
+</div>
+{% endblock %}
