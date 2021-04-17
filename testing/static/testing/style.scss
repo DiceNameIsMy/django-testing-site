@@ -72,7 +72,8 @@ main {
     margin-left: 10%;
     margin-right: 10%;
     padding: 1em;
-    height: 30em;  
+    padding-bottom: 6em;
+    min-height: 30em;  
 }
 
 article {
@@ -88,6 +89,16 @@ section.wrapper {
         background-color: #f2f2f2;
     }
 }
+
+div.test_detail {
+    padding: 1em;
+}
+
+div.test_questions {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
 
 span.description {
     font-size: small;
