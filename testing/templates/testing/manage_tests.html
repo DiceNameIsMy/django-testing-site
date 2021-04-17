@@ -1,20 +1,22 @@
 {% extends 'testing/basic.html'%}
-{% load static %}
 
 {% block head %}
 <title>My tests</title>
 {% endblock %}
 {% block body %}
+<article>
+    <h2>My tests:</h2><br>
 
-<h1>My tests:</h1>
-<div>
-    <ul>
-        {% for i in tests %}
-        <li>
-            <a href="{{ i.pk }}">{{ i.name }}</a>
-            <span>{{ i.pub_date }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+{% for test in user_created_tests %}
+<section class="wrapper">
+    <a href="{{test.pk}}">
+    <h2>{{ test.name }}</h2>
+    <h3>{{ test.description }}</h3>
+    <span class="date">{{ test.pub_date }}</span>
+    </a>
+</section>
+{% endfor %}
+
+</article>
+
 {% endblock %}
