@@ -5,7 +5,7 @@ from .views import *
 app_name = 'testing'
 urlpatterns = [
     path('', MainPageView.as_view(), name='Main page'),
-    path('tests/<slug:group_slug>/<int:t_pk>/testing/<int:q_pk>/', TestingProcessView.as_view(), name='Testing process'),
+    path('tests/<slug:group_slug>/<int:t_pk>/testing/<int:q_pk>', TestingProcessView.as_view(), name='Testing process'),
     path('tests/<slug:group_slug>/<int:t_pk>/', TestingPageView.as_view(), name='Testing page'),
     path('tests/<slug:group_slug>/<int:t_pk>/completed/', TestCompletedView.as_view() , name='Test was completed'),
     path('tests/<slug:group_slug>/', GroupTestsView.as_view(), name='Tests in group'),
