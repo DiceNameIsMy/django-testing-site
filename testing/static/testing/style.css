@@ -152,6 +152,11 @@ p {
       align-self: center;
 }
 
+span.error_message {
+  font-size: .8em;
+  color: #aa2424;
+}
+
 footer {
   text-align: center;
   height: 16em;

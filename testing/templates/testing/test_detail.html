@@ -14,6 +14,12 @@
     
 <div class="test_questions">
 
+    {% if message %}
+        {% for m in message.0 %}
+        <span class="error_message">{{ m }}</span>
+        {% endfor %}
+    {% endif %}
+
     {% for couple in questions_w_answers %}
         <form method="POST">
             {% csrf_token %}
@@ -23,7 +29,8 @@
         
         <div class="answers">
         {% for answer in couple.1 %}
-            <input type="text" value="{{ answer }}" name="answer" maxlength="100" size="30">
+            <input type="text" value="{{ answer }}" name="answer_text" maxlength="100" size="30">
+            <input type="hidden" value="{{ answer.pk }}" name="a_pk">
 
             {% if answer.is_correct %}
                 <input type="checkbox" name="is_cor" value="{{ answer.pk }}" checked>
