@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render 
+from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponseRedirect
 
@@ -52,7 +52,7 @@ class TestingProcessView(LoginRequiredMixin, View):
         return render(request, 'testing/testing_process.html', context)
         
     def post(self, request, group_slug, t_pk, q_pk, *args, **kwargs): # it can be done better
-        answers = sorted(request.POST.getlist('answers'))
+        answers = request.POST.getlist('answers')
         username = request.user.username
 
         result = testing_process_post(t_pk, q_pk, username, answers)
@@ -158,11 +158,17 @@ class TestDetailView(LoginRequiredMixin, View): # raw view
                 'group': test.group,
                 'pub_date': test.pub_date,
                 'questions_w_answers': questions_w_answers,
+                'message': args,
             }
             return render(request, 'testing/test_detail.html', context=context)
         else:
             return render(request, 'testing/access_denied.html')
     
-    def put(self, request, t_pk, *args, **kwargs):
-        print(request, request.PUT['question'])
-        print(request.PUT['answer'])
+    def post(self, request, t_pk, *args, **kwargs):
+        post_data = request.POST
+        error_msg = validate_qna(post_data)
+        
+        if not error_msg:
+            return HttpResponseRedirect(request.path)
+        else:
+            return self.get(request, t_pk, error_msg, **kwargs)
