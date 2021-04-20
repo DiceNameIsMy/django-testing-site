@@ -11,11 +11,13 @@
         <h3>There is no tests avaliable.</h3><br>
     {% else %}
         {% for test in tests %}
+        <a href="{{ test.pk }}">
         <section class="wrapper">
-            <a href="{{ test.pk }}">{{ test.name }}</a><br>
+            <h2 class=obj_name>{{ test.name }}</h2>
             <span class="description">{{ test.description }}</span><br>
             <span class="date">{{ test.pub_date }}</span>
         </section>
+        </a>
         {% endfor %} 
     {% endif %}
 </article>

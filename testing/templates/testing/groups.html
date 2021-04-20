@@ -8,10 +8,12 @@
 <article>
 <h2>Test groups</h2><br>
     {% for group in groups %}
+    <a href="/tests/{{ group.name }}">
         <section class="wrapper">
-        <a href="/tests/{{ group.name }}">{{ group.name }}</a>
+        <h2 class="obj_name">{{ group.name }}</h2>
         <p class="description">{{ group.description }}</p>
         </section>
+    </a>
     {% endfor %}
 </article>
 

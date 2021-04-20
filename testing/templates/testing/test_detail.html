@@ -15,19 +15,20 @@
 <div class="test_questions">
 
     {% for couple in questions_w_answers %}
-        <form action="POST">
+        <form method="POST">
             {% csrf_token %}
         <label for="question">Question:</label><br>
         <textarea id="question" name="question" maxlength="200" rows="3" cols="80">{{ couple.0 }}</textarea>
+        <input type="hidden" name="q_pk" value="{{couple.0.pk}}">
         
         <div class="answers">
         {% for answer in couple.1 %}
             <input type="text" value="{{ answer }}" name="answer" maxlength="100" size="30">
 
             {% if answer.is_correct %}
-                <input type="checkbox" name="is_cor" checked>
+                <input type="checkbox" name="is_cor" value="{{ answer.pk }}" checked>
             {% else %}
-                <input type="checkbox" name="is_cor">
+                <input type="checkbox" name="is_cor" value="{{ answer.pk }}">
             {% endif %}
         <br>
         {% endfor %}
