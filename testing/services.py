@@ -8,7 +8,7 @@ from .models import TestGroup, Test, Question, Answer, UserTest
 def _check_answer_is_correct(question, answers: list) -> bool:
     correct_answers = [str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)]
     
-    if correct_answers == answers:
+    if correct_answers == sorted(answers):
         return True
     else:
         return False
@@ -18,12 +18,12 @@ def get_groups_of_tests():
     return TestGroup.objects.all()
 
 
-def get_group_of_tests_by_pub_date(group):
+def get_group_of_tests_by_pub_date(group: str):
     group = TestGroup.objects.get(name=group)
     return Test.objects.filter(group=group).order_by('-pub_date')
 
 
-def get_test_by_pk(t_pk):
+def get_test_by_pk(t_pk: int):
     return Test.objects.get(pk=t_pk)
 
 
@@ -89,7 +89,7 @@ def _is_answer_valid(question, answers: list) -> bool:
         return True
 
 
-def _check_test_completed(test, question_num_key: int, usertest) -> bool:
+def _check_test_completed(test, usertest, question_num_key: int) -> bool:
 
     if test.questions_amount != question_num_key:
         usertest.question_in_process += 1
@@ -106,7 +106,7 @@ def testing_process_post(t_pk, q_pk, username, answers) -> str:
 
     if not _is_answer_valid(question, answers):
         return 'unvalid'
-
+ 
     usertest = UserTest.objects.get(user=User.objects.get(username=username))
     _post_answer(question, usertest, answers)
 
@@ -167,3 +167,42 @@ def access_to_test(username, test) -> bool:
         return True
     else:
         return False
+
+
+def is_question_valid(question):
+
+    if len(question) < 5:
+        return 'Question should be longer than 5 characters'
+    elif len(question) > 200:
+        return 'Question should be shorter than 200 characters'
+    else:
+        if question[-1] != '?':
+            return 'Question should have "?" at the end'
+
+
+def is_answer_valid(answer):
+
+    if not answer:
+        return 'Answer should not be empty'
+    if len(answer) > 100:
+        return 'Answer should be shorter than 100 characters'
+
+
+def validate_qna(post_data) -> list:
+    """ if list is empty data is valid """
+    msg = []
+
+    question = post_data['question']
+    answers = post_data.getlist('answer_text')
+
+    q_msg = is_question_valid(question)
+    a_msg = [is_answer_valid(a) for a in answers]
+
+    if q_msg:
+        msg.append(q_msg)
+    for m in a_msg:
+        if m:
+            msg.append(m)
+
+    return msg
+
