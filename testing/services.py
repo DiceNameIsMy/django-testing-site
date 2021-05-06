@@ -5,14 +5,6 @@ from django.contrib.auth import login, logout, authenticate
 from .models import TestGroup, Test, Question, Answer, UserTest
 
 
-def _check_answer_is_correct(question, answers: list) -> bool:
-    correct_answers = [str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)]
-    
-    if correct_answers == sorted(answers):
-        return True
-    else:
-        return False
-
 
 def get_groups_of_tests():
     return TestGroup.objects.all()
@@ -70,33 +62,6 @@ def get_question_context(test_obj, question_num_key: int) -> dict:
         }
 
     return context
-
-
-def _post_answer(question, usertest, answers: list) -> None:
-    """Called when user sends his answer/answers to question. If his answers are correct adds +1 to score"""
-    
-    if _check_answer_is_correct(question=question, answers=answers):
-        usertest.score += 1
-        usertest.save()
-
-
-def _is_answer_valid(question, answers: list) -> bool:
-    """Checks if user didn't select all answers or none of them"""
-    correct_answers_len = len(Answer.objects.filter(question=question)) 
-    if len(answers) == correct_answers_len or len(answers) == 0:
-        return False
-    else: 
-        return True
-
-
-def _check_test_completed(test, usertest, question_num_key: int) -> bool:
-
-    if test.questions_amount != question_num_key:
-        usertest.question_in_process += 1
-        usertest.save()
-        return False
-    else:
-        return True
 
 
 def testing_process_post(t_pk, q_pk, username, answers) -> str:
@@ -205,4 +170,41 @@ def validate_qna(post_data) -> list:
             msg.append(m)
 
     return msg
+
+
+
+def _check_answer_is_correct(question, answers: list) -> bool:
+    correct_answers = [str(answer.pk) for answer in Answer.objects.filter(question=question, is_correct=True)]
+    
+    if correct_answers == sorted(answers):
+        return True
+    else:
+        return False
+
+
+def _post_answer(question, usertest, answers: list) -> None:
+    """Called when user sends his answer/answers to question. If his answers are correct adds +1 to score"""
+    
+    if _check_answer_is_correct(question=question, answers=answers):
+        usertest.score += 1
+        usertest.save()
+
+
+def _is_answer_valid(question, answers: list) -> bool:
+    """Checks if user didn't select all answers or none of them"""
+    correct_answers_len = len(Answer.objects.filter(question=question)) 
+    if len(answers) == correct_answers_len or len(answers) == 0:
+        return False
+    else: 
+        return True
+
+
+def _check_test_completed(test, usertest, question_num_key: int) -> bool:
+
+    if test.questions_amount != question_num_key:
+        usertest.question_in_process += 1
+        usertest.save()
+        return False
+    else:
+        return True
 

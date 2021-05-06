@@ -30,7 +30,6 @@ class GroupTestsView(LoginRequiredMixin, View):
         return render(request, 'testing/group_tests.html', context)
 
 
-
 class TestingPageView(LoginRequiredMixin, View):
     login_url='/signin/'
 
@@ -40,7 +39,6 @@ class TestingPageView(LoginRequiredMixin, View):
     def post(self, request, t_pk, *args, **kwargs):
         question_num = get_quesiton_in_progress_or_create(test_pk=t_pk, username=request.user.username)
         return HttpResponseRedirect(f'testing/{question_num}')
-
 
 
 class TestingProcessView(LoginRequiredMixin, View):
@@ -65,7 +63,6 @@ class TestingProcessView(LoginRequiredMixin, View):
             return HttpResponseRedirect(str(q_pk+1))
 
 
-
 class TestCompletedView(LoginRequiredMixin, View):
     login_url='/signin/'    
 
@@ -77,7 +74,6 @@ class TestCompletedView(LoginRequiredMixin, View):
 
     def post(self, request, t_pk, *args, **kwargs):
         pass
-
 
 
 class LoginUserView(View):
@@ -93,7 +89,6 @@ class LoginUserView(View):
         else:
             context = {'is_auth': request.user.is_authenticated, 'message': 'Please enter the correct username and password.'}
             return render(request, 'testing/signin.html', context)
-
 
 
 class RegisterUserView(View):
