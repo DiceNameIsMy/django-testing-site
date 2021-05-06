@@ -134,42 +134,32 @@ def access_to_test(username, test) -> bool:
         return False
 
 
-def is_question_valid(question):
-
-    if len(question) < 5:
-        return 'Question should be longer than 5 characters'
-    elif len(question) > 200:
-        return 'Question should be shorter than 200 characters'
-    else:
-        if question[-1] != '?':
-            return 'Question should have "?" at the end'
-
-
-def is_answer_valid(answer):
-
-    if not answer:
-        return 'Answer should not be empty'
-    if len(answer) > 100:
-        return 'Answer should be shorter than 100 characters'
-
-
-def validate_qna(post_data) -> list:
-    """ if list is empty data is valid """
+def validate_qna(post_data: dict) -> list:
+    """ Returns error messages
+    if list is empty data is valid 
+    """
+    print(post_data)
     msg = []
 
-    question = post_data['question']
-    answers = post_data.getlist('answer_text')
+    answers = post_data['answers']
 
-    q_msg = is_question_valid(question)
-    a_msg = [is_answer_valid(a) for a in answers]
+    print([a[0] for a in answers])
+
+    if not 'cor_answers_pk' in post_data:
+        msg.append('There should be at least one correct answer')
+    elif len(post_data['cor_answers_pk']) == len(answers):
+        msg.append("All questions can't be correct")
+
+    q_msg = _is_edited_question_valid(post_data['q_text'])
+    a_msg = [_is_edited_answer_valid(answer=a[0]) for a in answers]
 
     if q_msg:
         msg.append(q_msg)
-    for m in a_msg:
-        if m:
-            msg.append(m)
+    for message in a_msg:
+        if message:
+            msg.append(message)
 
-    return msg
+    return set(msg)
 
 
 
@@ -190,6 +180,25 @@ def _post_answer(question, usertest, answers: list) -> None:
         usertest.save()
 
 
+def _is_edited_question_valid(question):
+
+    if not question:
+        return 'Question should not be empty'
+    elif len(question) > 200:
+        return 'Question should be shorter than 200 characters'
+    else:
+        if question[-1] != '?':
+            return 'Question should have "?" at the end'
+
+
+def _is_edited_answer_valid(answer: str) -> str:
+
+    if not answer:
+        return 'Answer should not be empty'
+    if len(answer) > 100:
+        return 'Answer should be shorter than 100 characters'
+
+        
 def _is_answer_valid(question, answers: list) -> bool:
     """Checks if user didn't select all answers or none of them"""
     correct_answers_len = len(Answer.objects.filter(question=question)) 

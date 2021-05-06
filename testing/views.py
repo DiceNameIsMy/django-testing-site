@@ -165,7 +165,16 @@ class TestDetailView(LoginRequiredMixin, View): # raw view
             return render(request, 'testing/access_denied.html')
     
     def post(self, request, t_pk, *args, **kwargs):
-        post_data = request.POST
+
+        post_data = {
+            'q_text': request.POST['question'],
+            'q_pk': request.POST['q_pk'],
+            'answers': set(zip(request.POST.getlist('answer_text'), request.POST.getlist('a_pk'))), 
+        }
+
+        if 'is_cor' in request.POST:
+            post_data['cor_answers_pk'] = request.POST.getlist('is_cor')
+
         error_msg = validate_qna(post_data)
         
         if not error_msg:
