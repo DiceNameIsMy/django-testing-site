@@ -7,21 +7,22 @@
 {% block body%}
 <h2>Sign in</h2>
 <a href="/signup">Sign up</a>
-{% if is_auth == False %}
-<form method="post">
-    {% csrf_token %}
-    <label for='username'>Username</label><br>
-    <input type="text" name="username" id="username"><br>
-    <label for='password'>Password</label><br>
-    <input type="password" name="password" id="password"><br>
-    <input type="submit" name="log" value="Login">
 
-</form>
+{% if is_auth == False %}
+    <form method="post">
+        {% csrf_token %}
+        <label for='username'>Username</label><br>
+        <input type="text" name="username" id="username"><br>
+        <label for='password'>Password</label><br>
+        <input type="password" name="password" id="password"><br>
+        <input type="submit" name="log" value="Login">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
 {% else %}
-<p>You are already signed in</p>
-<form action="/logout">
-    <input type="submit" value="Logout" />
-</form>
+    <p>You are already signed in</p>
+    <form action="/logout">
+        <input type="submit" value="Logout" />
+    </form>
 {% endif %}
 
 <form action="/">
