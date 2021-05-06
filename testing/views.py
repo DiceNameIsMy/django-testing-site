@@ -142,7 +142,7 @@ class ManageTestsView(LoginRequiredMixin, View):
         return render(request, 'testing/manage_tests.html', context={'user_created_tests': user_created_tests})
 
 
-class TestDetailView(LoginRequiredMixin, View): # raw view
+class TestEditView(LoginRequiredMixin, View): # raw view
     login_url='/signin/'
 
     def get(self, request, t_pk, *args, **kwargs):
