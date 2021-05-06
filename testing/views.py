@@ -79,13 +79,18 @@ class TestCompletedView(LoginRequiredMixin, View):
 class LoginUserView(View):
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'testing/signin.html', {'is_auth': request.user.is_authenticated})
+        context = {
+            'is_auth': request.user.is_authenticated, 
+            'next': request.GET.get('next', ''),
+        }
+        return render(request, 'testing/signin.html', context)
 
     def post(self, request, *args, **kwargs):
         attempt_to_login = try_to_login_user(username=request.POST['username'], raw_password=request.POST['password'], request=request)
 
         if attempt_to_login:
-            return HttpResponseRedirect('/')
+            print(request.POST['next'])
+            return HttpResponseRedirect(f"{ request.POST['next']}")
         else:
             context = {'is_auth': request.user.is_authenticated, 'message': 'Please enter the correct username and password.'}
             return render(request, 'testing/signin.html', context)
