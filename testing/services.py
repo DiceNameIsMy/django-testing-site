@@ -67,7 +67,8 @@ def get_question_context(test_obj, question_num_key: int) -> dict:
 def testing_process_post(t_pk, q_pk, username, answers) -> str:
     """called when TestingProcessView gets POST"""
     test = Test.objects.get(pk=t_pk)
-    question = Question.objects.get(test=test, question_num=q_pk)
+    question = test.questions.get(question_num=q_pk)
+    # question = Question.objects.get(test=test, question_num=q_pk)
 
     if not _is_answer_valid(question, answers):
         return 'unvalid'
@@ -75,7 +76,7 @@ def testing_process_post(t_pk, q_pk, username, answers) -> str:
     usertest = UserTest.objects.get(user=User.objects.get(username=username))
     _post_answer(question, usertest, answers)
 
-    if _check_test_completed(test, q_pk, usertest=usertest):
+    if _check_test_completed(test, usertest, q_pk):
         return 'completed'
     else:
         return 'next'
@@ -135,15 +136,12 @@ def access_to_test(username, test) -> bool:
 
 
 def validate_qna(post_data: dict) -> list:
-    """ Returns error messages
+    """ Returns error messages.
     if list is empty data is valid 
     """
-    print(post_data)
     msg = []
 
     answers = post_data['answers']
-
-    print([a[0] for a in answers])
 
     if not 'cor_answers_pk' in post_data:
         msg.append('There should be at least one correct answer')
