@@ -14,17 +14,17 @@ class TestGroup(models.Model):
 class Test(models.Model):
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=200)
-    group = models.ForeignKey(TestGroup, on_delete=models.SET_NULL, null=True)
+    group = models.ForeignKey(TestGroup, on_delete=models.SET_NULL, null=True, related_name='tests')
     pub_date = models.DateField(default=now)
     questions_amount = models.SmallIntegerField(default=0)
-    creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name='tests')
 
     def __str__(self):
         return f'name:{self.name}, creator:{self.creator}'
 
 
 class Question(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
     text = models.CharField(max_length=200)
     question_num = models.SmallIntegerField(default=0)
 
@@ -33,7 +33,7 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     text = models.CharField(max_length=100)
     is_correct = models.BooleanField(default=False)
 
